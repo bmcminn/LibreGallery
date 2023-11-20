@@ -1,0 +1,26 @@
+{
+  "name": "motherdough",
+  "version": "0.0.1",
+  "description": "A REST API starter kit built on PHP 8.1+ and Vue 3",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "concurrently --kill-others \"npm:dev-server\" \"npm:dev-client\"",
+    "dev-server": "composer run dev",
+    "dev-client": "npm run client -- run build -- --watch",
+    "client": "npm --prefix ./client",
+    "--postinstall": "composer install && npm run client -- install",
+    "emails": "node .bin/emails.js",
+    "mjml:build": "npm run mjml:dev -- --build",
+    "test-emails": "php _test/test-emails.php"
+  },
+  "author": "bmcminn <bmcminn@users.noreply.github.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "chokidar": "^3.5.3",
+    "concurrently": "^7.6.0",
+    "html-minifier": "^4.0.0",
+    "mjml": "^4.13.0",
+    "upath": "^2.0.1",
+    "yargs": "^17.7.1"
+  }
+}

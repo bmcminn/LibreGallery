@@ -1,0 +1,17 @@
+<mj-section>
+    <mj-column>
+
+        <mj-include path="./security-alert.mjml" />
+
+
+        <mj-text align="center"
+            css-class="text"
+        >
+            &copy; {{company.legalName}} {{date.year}}. All Rights Reserved.
+            <br><br>
+            <a href="{{public_routes.about|url}}">About</a>  |
+            <a href="{{public_routes.privacy|url}}">Privacy Policy</a>  |
+            <a href="{{public_routes.terms|url}}">Terms of Service</a>
+        </mj-text>
+    </mj-column>
+</mj-section>

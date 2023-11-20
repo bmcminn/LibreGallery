@@ -1,0 +1,38 @@
+{
+    "name": "bmcminn/motherdough",
+    "type": "project",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        },
+        "files": [
+            "src/lib/functions.php",
+            "src/lib/rb-sqlite.php",
+            "src/setup.php"
+        ]
+    },
+    "authors": [
+        {
+            "name": "bmcminn",
+            "email": "bmcminn@users.noreply.github.com"
+        }
+    ],
+    "scripts": {
+        "dev": "composer dumpautoload -o && php -S localhost:3005 -t public",
+        "phpstan": "phpstan analyse src"
+    },
+    "require": {
+        "rakit/validation": "1.4",
+        "monolog/monolog": "3.3",
+        "slim/slim": "4.11",
+        "slim/psr7": "1.6",
+        "twig/twig": "^3.5",
+        "ramsey/uuid": "^4.7",
+        "vlucas/phpdotenv": "^5.5",
+        "phpmailer/phpmailer": "^6.8"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^1.10"
+    }
+}

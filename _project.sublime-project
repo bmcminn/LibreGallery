@@ -1,0 +1,26 @@
+{
+    "name": "Photo Share App",
+	"folders":
+	[
+		{
+			"path": ".",
+            "folder_exclude_patterns": [
+                ".container/",
+                ".git",
+                ".vscode",
+                "__*/",
+                "node_modules",
+                "storage/cache",
+                "storage/database",
+                "vendor",
+                "public/",
+                "!client/public/*",
+            ],
+            "file_exclude_patterns": [
+                "*.lock*",
+                "*.sublime-workspace",
+                "autload_*",
+            ],
+		}
+	]
+}

@@ -1,0 +1,29 @@
+html {
+    font-family: sans-serif;
+}
+
+
+.user-form {
+    width: 100%;
+    max-width: 20em;
+    margin: auto;
+}
+
+.formkit-outer {
+    width: 100%;
+    margin: 1em 0;
+}
+
+.formkit-label {
+    display: block;
+    margin-bottom: 0.5em;
+}
+.formkit-inner input,
+.formkit-inner textarea {
+    width: 100%;
+    padding: 0.5em 0.5em;
+}
+
+.formkit-inner input[type="radio"] {
+    width: auto;
+}
