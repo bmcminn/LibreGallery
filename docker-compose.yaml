@@ -1,15 +1,14 @@
 version: '3.8'
 services:
-    # php:
-    #     container_name: php
-    #     image: php
-    #     expose:
-    #         - 9000
-    #     volumes:
-    #         - .:/app
+    # vue_client:
+    #     container_name: libre-gallery-client
+    #     build:
+    #         context: ./client
+    #     working_dir: /app/client
+
 
     apache:
-        container_name: php-apache-dev
+        container_name: libre-gallery-apache
         image: webdevops/php-apache-dev:8.1
         working_dir: /app
         links:

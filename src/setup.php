@@ -130,17 +130,24 @@ Hash::setup();
 
 // TODO: adjust folder permissions and can test whether it works or not
 // TODO: abstract this to its own postinstall script to scaffold out folder structure
-foreach ([
+mkdirs([
     [ Config::get('paths.cache_dir'),       0766 ],
     [ Config::get('paths.database_dir'),    0766 ],
     [ Config::get('paths.logs_dir'),        0766 ],
     [ Config::get('paths.sessions_dir'),    0766 ],
     [ Config::get('paths.views_dir'),       0766 ],
-] as $path) {
-    [ $filepath, $permissions ] = $path;
-    if (is_dir($filepath)) { continue; }
-    mkdir($filepath, $permissions, $recursive = true);
-}
+]);
+// foreach ([
+//     [ Config::get('paths.cache_dir'),       0766 ],
+//     [ Config::get('paths.database_dir'),    0766 ],
+//     [ Config::get('paths.logs_dir'),        0766 ],
+//     [ Config::get('paths.sessions_dir'),    0766 ],
+//     [ Config::get('paths.views_dir'),       0766 ],
+// ] as $path) {
+//     [ $filepath, $permissions ] = $path;
+//     if (is_dir($filepath)) { continue; }
+//     mkdir($filepath, $permissions, $recursive = true);
+// }
 
 
 Logger::setup([
@@ -153,6 +160,10 @@ Session::setup([
     'path' => Config::get('paths.sessions_dir'),
     // 'expires' => ,
 ]);
+
+// Capture the origin IP address so we can compare as needed later
+Session::set('ipaddress', $_SERVER['REMOTE_ADDR']);
+
 
 
 Template::setup([

@@ -5,21 +5,22 @@
 		{
 			"path": ".",
             "folder_exclude_patterns": [
+                "!client/public/*",
                 ".container/",
                 ".git",
                 ".vscode",
                 "__*/",
                 "node_modules",
+                "public/",
                 "storage/cache",
                 "storage/database",
                 "vendor",
-                "public/",
-                "!client/public/*",
             ],
             "file_exclude_patterns": [
                 "*.lock*",
                 "*.sublime-workspace",
                 "autload_*",
+                "composer.phar",
             ],
 		}
 	]

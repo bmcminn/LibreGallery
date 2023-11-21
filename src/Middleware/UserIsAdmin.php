@@ -28,17 +28,17 @@ class UserIsAdmin {
         $user = R::findOne('user', 'uuid = ?', [ $userId ]);
 
         if (!!!$user->isAdmin) {
-            $model = [
-                'message' => 'User is not authorized to perform this action',
-                'success' => false,
-            ];
+            // $model = [
+            //     'message' => 'User is not authorized to perform this action',
+            //     'success' => false,
+            // ];
 
-            return jsonResponse($model, HTTP_UNAUTHORIZED);
+            // return jsonResponse($model, HTTP_UNAUTHORIZED);
+
+            return errorResponse('User is not authorized to perform this action', HTTP_UNAUTHORIZED);
         }
 
         $res = $next->handle($req);
-
-        // $res = new Response();
 
         return $res;
     }

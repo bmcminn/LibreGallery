@@ -82,8 +82,13 @@
 
     import { Api } from '@/http.js'
     import { ref } from 'vue'
+    import { lsGetItem, lsSetItem } from '@/helpers.js'
+    import { useRoute, useRouter } from 'vue-router'
     // const testEmail = 'bob@law.blah'
     // const testPassword = 'testing123'
+
+    const Router = useRouter()
+    const Route = useRoute()
 
     const isLoginView           = window.location.href.includes(window.AppConfig.routes.login)
     const isRegistrationView    = window.location.href.includes(window.AppConfig.routes.register)
@@ -104,11 +109,14 @@
                 email, password
             })
 
-            if (!res.success) {
+            if (!res.data.success) {
                 errorMessage.value = res.message
+                return
             }
 
             console.log(res)
+            lsSetItem('user', res.data.user)
+            Router.push({ name: 'dashboard' })
 
         } catch(err) {
             console.error(err)

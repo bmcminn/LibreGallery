@@ -122,6 +122,25 @@ function url(string $path, array $query=[]) {
 
 
 
+function mkdirs(array $paths) {
+
+    // $paths = [
+    //     [ "/dir/path/here",  0766 ],
+    //     [ "/dir/path/here",  0766 ],
+    //     [ "/dir/path/here",  0766 ],
+    //     ...
+    // ]
+
+    foreach ($paths as $path) {
+        [ $filepath, $permissions ] = $path;
+        if (is_dir($filepath)) { continue; }
+        mkdir($filepath, $permissions, $recursive = true);
+    }
+
+}
+
+
+
 /**
  * { function_description }
  *
@@ -214,12 +233,35 @@ function filterJson($fields, array $allowedList) {
             case 'array':
                 $value = (array) $value;
                 break;
+            case 'date':
+                $value = date($filter);
+                break;
+            case 'datetime':
+                $value = $value
+                    ? (new DateTime($value))->format('Y-m-d H:i:s')
+                    : null;
+                break;
         }
 
         $res[$key] = $value;
     }
 
     return $res;
+}
+
+
+
+function minmax(int|float $value, int|float $min = 0, int|float $max = null) {
+
+    if ($value < $min) {
+        return $min;
+    }
+
+    if ($max && $value > $max) {
+        return $max;
+    }
+
+    return $value;
 }
 
 
