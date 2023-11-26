@@ -60,6 +60,11 @@
                         <td>{{ entry }}</td>
                     </slot>
                 </tr>
+                <tr v-if="entries.length === 0">
+                    <td colspan="40" class="text-center">
+                        No results available
+                    </td>
+                </tr>
             </tbody>
         </table>
 
@@ -107,7 +112,7 @@ const props = defineProps({
     },
 })
 
-const listType = ref(lsGetItem(props.gridName) ?? listType ?? MODE_TABLE)
+const listType = ref(lsGetItem(props.gridName) ?? props.listType ?? MODE_TABLE)
 
 
 const isTable = computed(() => listType.value === MODE_TABLE)

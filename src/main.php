@@ -137,6 +137,13 @@ $app->group('/api', function(RouteCollectorProxy $api) {
 
         $client->get('/users[/{index}]', [ Controllers\UserController::class, 'getUsers' ]);
 
+
+
+        $client->get('/collections', [ Controllers\CollectionController::class, 'readCollections' ]);
+        $client->post('/collections', [ Controllers\CollectionController::class, 'createCollection' ]);
+        $client->put('/collections', [ Controllers\CollectionController::class, 'updateCollection' ]);
+        $client->delete('/collections', [ Controllers\CollectionController::class, 'deleteCollection' ]);
+
     })
         ->add(Middleware\UserIsLoggedIn::class)
         ;

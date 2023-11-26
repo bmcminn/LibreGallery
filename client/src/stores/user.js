@@ -1,17 +1,17 @@
 import { defineStore } from 'pinia'
+import { ref, computed, watch } from 'vue'
 
 import { lsGetItem, lsSetItem } from '@/helpers.js'
 
 
-const STORE_LABEL = 'user'
+const STORE_LABEL = 'user_state'
 
 
-export const useUserStore = defineStore('counter', {
+export const useUserStore = defineStore('user', {
 
     state: () => {
         return {
             user: lsGetItem(STORE_LABEL),
-
         }
     },
 
@@ -20,6 +20,10 @@ export const useUserStore = defineStore('counter', {
 
         getUser(state) {
             return state.user
+        },
+
+        isLoggedIn(state) {
+            return !!state.user
         },
 
     },

@@ -6,17 +6,17 @@
                 <nav>
                     <RouterLink to="/">Home</RouterLink>
 
-                    <RouterLink v-if="!user"
+                    <RouterLink v-if="!userStore.isLoggedIn"
                         :to="{ name: 'login' }"
                     >Login</RouterLink>
 
-                    <a v-if="user"
-                        @click="logoutUser"
-                    >Logout</a>
-
-                    <RouterLink v-if="!user"
+                    <RouterLink v-if="!userStore.isLoggedIn"
                         :to="{ name: 'register' }"
                     >Register</RouterLink>
+
+                    <a v-if="userStore.isLoggedIn"
+                        @click="logoutUser"
+                    >Logout</a>
                 </nav>
             </div>
         </header>
@@ -59,12 +59,11 @@ import { lsGetItem, lsSetItem } from '@/helpers.js'
 import { useUserStore } from '@/stores/user.js'
 
 
-const Router = useRouter()
+const Router    = useRouter()
 
-// TODO: convert to pinia instance; make pinia reference localStorage
 const userStore = useUserStore()
 
-const user = computed(() => userStore.getUser)
+const user      = computed(() => userStore.user)
 
 
 async function logoutUser() {

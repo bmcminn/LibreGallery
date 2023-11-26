@@ -10,7 +10,7 @@ export function lsGetItem(key) {
 }
 
 export function lsSetItem(key, value) {
-    value = JSON.stringify(value)
-
-    return localStorage.setItem(key, value)
+    const data = JSON.stringify(value)
+    localStorage.setItem(key, data)
+    return value
 }

@@ -38,7 +38,7 @@ nav > ul {
 
 
 .table {
-
+    width: 100%;
 }
 
 .table tr:nth-child(odd) { background-color: #e3e3e3 }
@@ -46,9 +46,14 @@ nav > ul {
 
 
 .flex { display: flex }
+.flex { --gap: 0; gap: var(--gap); }
 .flex.space-between { justify-content: space-between }
 .flex.align-center { align-items: center }
 
+.flex .grow { flex-grow: 1; }
+
+
+.flex.gap-1 { --gap: 1em }
 
 
 .text-center { text-align: center }

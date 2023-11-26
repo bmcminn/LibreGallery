@@ -2,14 +2,17 @@
     <div class="dashboard">
         <h1>Dashboard</h1>
 
-        <div class="flex">
+        <div class="flex gap-1">
             <nav>
                 <ul>
-                    <RouterLink :to="{ name: 'dashboardusers' }">Users</RouterLink>
+
+                    <li><RouterLink :to="{ name: 'dashboard' }">All Files</RouterLink></li>
+                    <li><RouterLink :to="{ name: 'dashboardusers' }">Users</RouterLink></li>
+                    <li><RouterLink :to="{ name: 'dashboardcollections' }">Collections</RouterLink></li>
                 </ul>
             </nav>
 
-            <RouterView></RouterView>
+            <RouterView class="grow"></RouterView>
         </div>
     </div>
 </template>
