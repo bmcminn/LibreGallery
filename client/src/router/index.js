@@ -6,45 +6,44 @@ const router = createRouter({
   routes: [
 
     {
-      path: window.AppConfig.routes.home,
+      path: '/',
       name: 'home',
       component: HomeView,
     },
 
     {
-      path: '/dashbaord',
+      path: '/dashboard',
       name: 'dashboard',
       // route level code-splitting
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
       component: () => import('@/views/DashboardView.vue'),
+
+      children: [
+          {
+            path: 'users',
+            name: 'dashboardusers',
+            component: () => import('@/views/DashboardUsersView.vue'),
+          },
+      ],
     },
 
     {
-      path: window.AppConfig.routes.about,
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('@/views/AboutView.vue'),
-    },
-
-    {
-      path: window.AppConfig.routes.login,
+      path: '/login',
       name: 'login',
       component: () => import('@/views/AuthView.vue'),
       force: true,
     },
 
     {
-      path: window.AppConfig.routes.register,
+      path: '/register',
       name: 'register',
       component: () => import('@/views/AuthView.vue'),
       force: true,
     },
 
     {
-      path: window.AppConfig.routes.forgotpassword,
+      path: '/forgot-password',
       name: 'forgotpassword',
       component: () => import('@/views/AuthView.vue'),
       force: true,

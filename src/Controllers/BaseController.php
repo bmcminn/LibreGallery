@@ -33,11 +33,13 @@ class BaseController {
     // CRUD METHODS
     //
 
-    protected function create(string $where = '', array $values = []) {
-        $model = R::dispense($this->table);
+    // protected function create(string $where = '', array $values = [], callable $cb) {
+    //     $model = R::dispense($this->table);
 
-        return R::store($model);
-    }
+    //     $model = cb($model);
+
+    //     return R::store($model);
+    // }
 
 
     protected function readAll(string $where = '', array $values = []) {
@@ -63,6 +65,21 @@ class BaseController {
     //
     // HELPER METHODS
     //
+
+
+    protected function isUser(string $user_id) {
+        return Session::get('user_id') === $user_id;
+    }
+
+
+    protected function isAdmin() {
+
+        $user = R::findOne('user', 'uuid = ?', [ Session::get('user_id') ]);
+        return $user->is_admin;
+        // return !!Session::get('is_admin');
+    }
+
+
 
     protected function filterModel($model, array $modelSchema = null) {
         $modelSchema = $modelSchema ?? $this->modelSchema;

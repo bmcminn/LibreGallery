@@ -21,8 +21,8 @@ class Session {
 
         $options = array_replace_recursive([
             'cache_limiter' => false,
-            'expires' => days(7),
-            'session_name' => 'APP_SESSION_NAME',
+            'expires'       => days(7),
+            'session_name'  => 'APP_SESSION_NAME',
         ], $options);
 
         ini_set('session.cookie_httponly', 1);

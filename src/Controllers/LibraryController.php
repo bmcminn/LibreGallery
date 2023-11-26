@@ -26,7 +26,6 @@ class UserController extends BaseController {
     protected $modelSchema = [
         'id'            => 'int',
         'uuid'          => 'string',
-        'username'      => 'string',
         'email'         => 'email',
         'is_admin'      => 'bool',
         'roles'         => 'string',
@@ -46,8 +45,7 @@ class UserController extends BaseController {
      *
      * @return     <type>    The users.
      */
-    public function getUsers(Request $req, Response $res, array $params) {
-        // $body = $req->getParsedBody();
+    public function getUserLibraries(Request $req, Response $res, array $params) {
         if (!$this->isAdmin()) {
             return errorResponse('action is not permitted', HTTP_UNAUTHORIZED);
         }
@@ -83,7 +81,7 @@ class UserController extends BaseController {
      *
      * @return     <type>    ( description_of_the_return_value )
      */
-    public function readUser(Request $req, Response $res, array $params) {
+    public function readLibrary(Request $req, Response $res, array $params) {
 
         $id = $params['id'] ?? null;
 
@@ -101,8 +99,7 @@ class UserController extends BaseController {
     }
 
 
-    public function updateUser(Request $req, Response $res, array $params) {
-
+    public function updateLibrary(Request $req, Response $res, array $params) {
         $id = $params['id'] ?? null;
 
         if (!$this->isUser($id) || !$this->isAdmin()) {
@@ -111,14 +108,6 @@ class UserController extends BaseController {
 
         $user = R::findOne($this->table, 'uuid = ?', [ $id ]);
 
-        $body = $req->getParsedBody();
-
-
-
-
-        $model = [];
-
-        $model['user'] = $user;
 
         return jsonResponse($model);
     }
@@ -129,7 +118,7 @@ class UserController extends BaseController {
     // HELPERS
     //
 
-    private function normalizeUser($user, array $overrides = null) {
+    private function normalizeLibrary($user, array $overrides = null) {
         $user = $this->filterModel($user, $overrides);
 
         return $user;

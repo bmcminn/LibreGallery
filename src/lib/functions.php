@@ -250,6 +250,14 @@ function filterJson($fields, array $allowedList) {
 }
 
 
+function getUserAgent() {
+    return implode('.', [
+        $_SERVER['HTTP_USER_AGENT'] ?? '',
+        $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '',
+        $_SERVER['HTTP_SEC_CH_UA'] ?? '',
+    ]);
+}
+
 
 function minmax(int|float $value, int|float $min = 0, int|float $max = null) {
 

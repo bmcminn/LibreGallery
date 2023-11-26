@@ -3,6 +3,14 @@ html {
 }
 
 
+
+nav > ul {
+    margin: 0;
+    padding: 0;
+}
+
+
+
 .user-form {
     width: 100%;
     max-width: 20em;
@@ -34,3 +42,15 @@ html {
 }
 
 .table tr:nth-child(odd) { background-color: #e3e3e3 }
+
+
+
+.flex { display: flex }
+.flex.space-between { justify-content: space-between }
+.flex.align-center { align-items: center }
+
+
+
+.text-center { text-align: center }
+.text-left { text-align: left }
+.text-right { text-align: right }
