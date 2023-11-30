@@ -17,9 +17,9 @@ use RedBeanPHP\Facade as R;
 
 
 
-class UserController extends BaseController {
+class UploadController extends BaseController {
 
-    protected $table = 'user';
+    protected $table = 'upload';
 
     protected $pageLimit = 10;
 
@@ -33,6 +33,43 @@ class UserController extends BaseController {
         'deleted_at'    => 'datetime',
         'last_login'    => 'datetime',
     ];
+
+
+
+    protected $queries = [
+
+        'ReadCollectionsByUser' => <<<SQL
+        -- READ ALL COLLECTIONS FOR A GIVEN USER
+        SELECT c.*
+        FROM user_collections as uc
+        INNER JOIN collection as c
+            ON uc.user_id = :user_id
+                AND c.id = uc.collection_id
+        SQL,
+
+
+        'ReadAllUploadsByCollection' => <<<SQL
+        -- READ ALL UPLOADS FROM A GIVEN COLLECTION UUID
+        SELECT c.uuid as collection_uuid, uc.permissions, u.*
+        FROM collection_uploads as cu
+        INNER JOIN collection as c
+            ON c.uuid = :collection_uuid
+        INNER JOIN upload as u
+            ON cu.upload_id = u.id
+        SQL,
+
+
+        'ReadAllUploadsByUser' => <<<SQL
+        -- READ ALL UPLOADS FROM A GIVEN USER
+        SELECT *
+        FROM upload WHERE user_id = ?
+        ORDER BY created_at
+        LIMIT ?
+        OFFSET ?
+        SQL,
+    ];
+
+
 
 
 

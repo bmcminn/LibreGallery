@@ -135,14 +135,18 @@ $app->group('/api', function(RouteCollectorProxy $api) {
 
     $api->group('', function(RouteCollectorProxy $client) {
 
-        $client->get('/users[/{index}]', [ Controllers\UserController::class, 'getUsers' ]);
+        $client->post('/users/{uuid}',          [ Controllers\UserController::class, 'createUser' ]);
+        $client->get('/users',                  [ Controllers\UserController::class, 'readUsers' ]);
+        $client->get('/users/{uuid}',           [ Controllers\UserController::class, 'readUser' ]);
+        $client->put('/users/{uuid}',           [ Controllers\UserController::class, 'updateUser' ]);
+        $client->delete('/users/{uuid}',        [ Controllers\UserController::class, 'deleteUser' ]);
 
 
-
-        $client->get('/collections', [ Controllers\CollectionController::class, 'readCollections' ]);
-        $client->post('/collections', [ Controllers\CollectionController::class, 'createCollection' ]);
-        $client->put('/collections', [ Controllers\CollectionController::class, 'updateCollection' ]);
-        $client->delete('/collections', [ Controllers\CollectionController::class, 'deleteCollection' ]);
+        $client->post('/collections/{uuid}',    [ Controllers\UploadController::class, 'createCollection' ]);
+        $client->get('/collections',            [ Controllers\UploadController::class, 'readCollections' ]);
+        $client->get('/collections/{uuid}',     [ Controllers\UploadController::class, 'readCollection' ]);
+        $client->put('/collections/{uuid}',     [ Controllers\UploadController::class, 'updateCollection' ]);
+        $client->delete('/collections/{uuid}',  [ Controllers\UploadController::class, 'deleteCollection' ]);
 
     })
         ->add(Middleware\UserIsLoggedIn::class)

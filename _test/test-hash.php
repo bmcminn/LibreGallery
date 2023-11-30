@@ -9,7 +9,7 @@ Hash::setup();
 
 chdir('_test');
 
-$password = 'testpassword';
+$password = 'TESTING_PASSWORD_HASH';
 
 $hash = Hash::password($password);
 

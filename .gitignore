@@ -9,6 +9,7 @@ public/assets/
 # local files
 .env
 !.env.sample
+.bin/sql/
 
 # Logs
 logs

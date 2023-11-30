@@ -162,7 +162,7 @@ Session::setup([
 ]);
 
 // Capture the origin IP address so we can compare as needed later
-Session::set('ipaddress', $_SERVER['REMOTE_ADDR']);
+Session::set('ipaddress', $_SERVER['REMOTE_ADDR'] ?? null);
 
 
 

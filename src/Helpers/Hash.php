@@ -14,13 +14,19 @@ class Hash {
     protected static array $options;
 
 
+    /**
+     * { function_description }
+     *
+     * @param      array  $options  The options
+     * @note https://tobtu.com/minimum-password-settings/
+     */
     public static function setup(array $options = []) {
         $options = array_replace_recursive([
             'algo' => PASSWORD_ARGON2ID,
             'options' => [
-                'memory_cost' => 11264,
-                'time_cost' => 3,
-                'threads' => 1,
+                'memory_cost'   => 19456,
+                'time_cost'     => 2,
+                'threads'       => 1,
             ]
         ], $options);
 
