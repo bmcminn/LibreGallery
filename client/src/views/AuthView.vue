@@ -33,12 +33,10 @@
             <button @click="queryApi">Query API</button>
             <button @click="logout">Logout</button>
 
-            <!--
-            // TODO: add support for forgot password
-            <RouterLink :to="{path: 'forgotpassword'}">
+            <!-- // TODO: add support for forgot password -->
+            <RouterLink :to="{name: 'passwordreset'}">
                 Forgot password?
             </RouterLink>
-             -->
         </div>
 
 
@@ -46,9 +44,9 @@
         <div class="user-form register" v-if="isRegistrationView">
             <h1>Register</h1>
 
-
             <FormKit
                 type="form"
+                submit-label="Register"
                 @submit="handleRegistration"
             >
                 <FormKit type="email"
@@ -66,12 +64,40 @@
                     <!-- :value="testPassword" -->
             </FormKit>
 
-            <!--
-            <RouterLink :to="{path: 'forgotpassword'}">
+            <RouterLink :to="{name: 'login'}">
+                Login
+            </RouterLink>
+
+            <RouterLink :to="{name: 'passwordreset'}">
                 Forgot password?
+            </RouterLink>
+        </div>
+
+
+
+        <div class="user-form password-reset" v-if="isPasswordResetView">
+            <h1>Reset Password</h1>
+
+            <FormKit
+                type="form"
+                submit-label="Reset Password"
+                @submit="handlePasswordReset"
+            >
+                <FormKit type="email"
+                    name="email"
+                    label="Email"
+                    required
+                />
+            </FormKit>
+
+            <!--
+            <RouterLink :to="{name: 'login'}">
+                Login
             </RouterLink>
              -->
         </div>
+
+
     </div>
 </template>
 
@@ -97,20 +123,32 @@
 
     const isLoginView           = window.location.href.includes(window.AppConfig.routes.login)
     const isRegistrationView    = window.location.href.includes(window.AppConfig.routes.register)
+    const isPasswordResetView   = window.location.href.includes(window.AppConfig.routes.passwordreset)
 
 
     const userStore = useUserStore()
-
 
     const user = computed(() => userStore.user )
 
 
     let errorMessage = ref('')
 
+
+    function setError(err) {
+
+        if (!err) {
+            errorMessage.value = null;
+        }
+
+        console.error(err)
+        errorMessage.value = err
+    }
+
+
     async function handleLogin(e) {
         console.log(e)
 
-        errorMessage.value = null
+        setError()
 
         const { email, password } = e
 
@@ -122,7 +160,7 @@
             })
 
             if (!res.data.success) {
-                errorMessage.value = res.message
+                setError(res.message)
                 return
             }
 
@@ -133,13 +171,14 @@
             Router.push({ name: 'dashboard' })
 
         } catch(err) {
-            console.error(err)
+            setError(err)
         }
     }
 
 
     async function queryApi() {
         let res
+        setError()
 
         try {
             res = await Api.get('users')
@@ -147,7 +186,7 @@
             console.log(res)
 
         } catch(err) {
-            console.error(err)
+            setError(err)
         }
     }
 
@@ -155,13 +194,15 @@
     async function logout() {
         let res
 
+        setError()
+
         try {
             res = await Api.get('auth/logout')
 
             console.log(res)
 
         } catch(err) {
-            console.error(err)
+            setError(err)
         }
     }
 
@@ -169,6 +210,29 @@
     async function handleRegistration(e) {
 
 
+    }
+
+
+
+    async function handlePasswordReset(e) {
+
+        setError()
+
+        let res
+
+        try {
+
+            const { email } = e
+
+            res = await Api.post('auth/password-reset', {
+                email,
+            })
+
+            console.log(res)
+
+        } catch(err) {
+            setError(err)
+        }
     }
 
 </script>

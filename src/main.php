@@ -126,6 +126,11 @@ $app->options('/{routes:.+}', function (Request $req, Response $res) {
 
 $app->group('/api', function(RouteCollectorProxy $api) {
 
+
+    //
+    // AUTH ROUTE HANDLERS
+    //
+
     $api->post('/auth/login',   [ Controllers\AuthController::class, 'login' ])
         ;
 
@@ -133,7 +138,21 @@ $app->group('/api', function(RouteCollectorProxy $api) {
         ->add(Middleware\VerifyUserAgent::class)
         ;
 
+    $api->post('/auth/password-reset', [ Controllers\AuthController::class, 'passwordReset' ])
+        ;
+
+    $api->post('/auth/verify-password-reset', [ Controllers\AuthController::class, 'verifyPasswordReset' ])
+        ;
+
+
+    /**
+     * { item_description }
+     */
     $api->group('', function(RouteCollectorProxy $client) {
+
+        //
+        // USER ROUTE HANDLERS
+        //
 
         $client->post('/users/{uuid}',          [ Controllers\UserController::class, 'createUser' ]);
         $client->get('/users',                  [ Controllers\UserController::class, 'readUsers' ]);
@@ -142,11 +161,22 @@ $app->group('/api', function(RouteCollectorProxy $api) {
         $client->delete('/users/{uuid}',        [ Controllers\UserController::class, 'deleteUser' ]);
 
 
+        //
+        // COLLECTIONS ROUTE HANDLERS
+        //
+
         $client->post('/collections/{uuid}',    [ Controllers\UploadController::class, 'createCollection' ]);
         $client->get('/collections',            [ Controllers\UploadController::class, 'readCollections' ]);
         $client->get('/collections/{uuid}',     [ Controllers\UploadController::class, 'readCollection' ]);
         $client->put('/collections/{uuid}',     [ Controllers\UploadController::class, 'updateCollection' ]);
         $client->delete('/collections/{uuid}',  [ Controllers\UploadController::class, 'deleteCollection' ]);
+
+
+        //
+        // UPLOAD ROUTE HANDLERS
+        //
+
+
 
     })
         ->add(Middleware\UserIsLoggedIn::class)

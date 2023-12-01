@@ -52,9 +52,10 @@ Config::setup([
     ],
 
     'app' => [
-        'name' => 'Photo Share',
-        'established' => 2023,
-        'copyright' => 'Gbox Studios',
+        'name'          => 'Photo Share',
+        'established'   => 2023,
+        'copyright'     => 'Gbox Studios',
+        'url'           => 'http://localhost:3005',
     ],
 
     'registration' => [

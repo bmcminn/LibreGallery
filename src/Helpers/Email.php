@@ -95,12 +95,28 @@ class Email {
 
 
 
+    public static function sendMessage(array $model = []) : bool {
+        $mail = self::newMessage($model);
+
+        try {
+
+            [$html, $altBody] = self::render($model['template'], $model);
+
+            $mail->Subject = $model['subject'];
+            $mail->Body    = $html;     // 'This is the HTML message body <b>in bold!</b>';
+            $mail->AltBody = $altBody;  // 'This is the body in plain text for non-HTML mail clients';
+
+            $mail->send();
+            return true;
+
+        } catch (Exception $e) {
+            echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+            return false;
+        }
+    }
+
+
     public static function sendVerificationEmail(array $model = []) : bool {
-        $success = true;
-
-        $company    = $model['company'];
-        $user       = $model['user'];
-
         $mail = self::newMessage($model);
 
         try {
@@ -118,8 +134,6 @@ class Email {
             echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
             return false;
         }
-
-        return $success;
     }
 
 
@@ -131,9 +145,7 @@ class Email {
 
         try {
 
-            $template = self::render('emails/one-time-password', $model);
-
-            [$html, $altBody] = $template;
+            [$html, $altBody] = self::render('emails/one-time-password', $model);
 
             $mail->Subject = 'Please verify your email address!';
             $mail->Body    = $html;     // 'This is the HTML message body <b>in bold!</b>';
@@ -159,7 +171,7 @@ class Email {
 
 
 
-    public static function sendForgotPassword(string $email, $token) {
+    public static function sendPasswordReset(string $email, $token) {
         $content = "Reset token: {$token}";
         $headers = [
             'from' => 'info@site.com',

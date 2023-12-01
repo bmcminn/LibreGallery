@@ -9,6 +9,8 @@ export function lsGetItem(key) {
     return JSON.parse(value)
 }
 
+
+
 export function lsSetItem(key, value) {
     const data = JSON.stringify(value)
     localStorage.setItem(key, data)
