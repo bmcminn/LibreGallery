@@ -213,9 +213,10 @@ class AuthController {
         try {
             $bean = R::dispense('token');
 
-            $bean->token    = $token;
-            $bean->type     = Token::TYPE_PASSWORD_RESET;
-            $bean->user_uuid  = $user->uuid;
+            $bean->token        = $token;
+            $bean->type         = Token::TYPE_PASSWORD_RESET;
+            $bean->userUuid     = $user->uuid;
+            $bean->expiresAt    = dateFromTimestamp(now() + days(1));
 
             $id = R::store($bean);
 
