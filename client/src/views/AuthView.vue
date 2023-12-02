@@ -1,7 +1,9 @@
 <template>
     <div>
 
-        <div class="user-form login" v-if="isLoginView">
+        <div v-if="isLoginView"
+            class="user-form login"
+        >
             <h1>Login</h1>
 
 
@@ -41,7 +43,9 @@
 
 
 
-        <div class="user-form register" v-if="isRegistrationView">
+        <div v-if="isRegistrationView"
+            class="user-form register"
+        >
             <h1>Register</h1>
 
             <FormKit
@@ -75,13 +79,15 @@
 
 
 
-        <div class="user-form password-reset" v-if="isPasswordResetView">
-            <h1>Reset Password</h1>
+        <div v-if="isPasswordResetRequestView"
+            class="user-form password-reset password-reset-request"
+        >
+            <h1>Reset Password Request</h1>
 
             <FormKit
                 type="form"
-                submit-label="Reset Password"
-                @submit="handlePasswordReset"
+                submit-label="Request Password Reset"
+                @submit="handlePasswordResetRequest"
             >
                 <FormKit type="email"
                     name="email"
@@ -90,6 +96,52 @@
                 />
             </FormKit>
 
+
+            <p v-if="errorMessage"
+                class="error-message"
+            >
+                {{ errorMessage }}
+                <span v-if="errorTimer">{{ errorTimer }} seconds</span>
+            </p>
+            <!--
+            <RouterLink :to="{name: 'login'}">
+                Login
+            </RouterLink>
+             -->
+        </div>
+
+
+        <div v-if="isPasswordResetView"
+            class="user-form password-reset"
+        >
+            <h1>Reset Password</h1>
+
+            <FormKit
+                type="form"
+                submit-label="Reset Password"
+                :disabled="!enableForm"
+                @submit="handlePasswordReset"
+            >
+
+                <FormKit type="password"
+                    name="password"
+                    label="Password"
+                    required
+                />
+                <FormKit type="password"
+                    name="password-confirm"
+                    label="Confirm Password"
+                    required
+                />
+            </FormKit>
+
+
+            <p v-if="errorMessage"
+                class="error-message"
+            >
+                {{ errorMessage }}
+                <span v-if="errorTimer">{{ errorTimer }} seconds</span>
+            </p>
             <!--
             <RouterLink :to="{name: 'login'}">
                 Login
@@ -114,6 +166,7 @@
     import { lsGetItem, lsSetItem } from '@/helpers.js'
     import { useRoute, useRouter } from 'vue-router'
     import { useUserStore } from '@/stores/user.js'
+    import { isEmpty } from '@/helpers.js'
 
     // const testEmail = 'bob@law.blah'
     // const testPassword = 'testing123'
@@ -121,17 +174,43 @@
     const Router    = useRouter()
     const Route     = useRoute()
 
-    const isLoginView           = window.location.href.includes(window.AppConfig.routes.login)
-    const isRegistrationView    = window.location.href.includes(window.AppConfig.routes.register)
-    const isPasswordResetView   = window.location.href.includes(window.AppConfig.routes.passwordreset)
+    const HREF          = window.location.href
 
+    const PAGE_URL      = new URL(HREF)
+    const QUERY_PARAMS  = new URLSearchParams(PAGE_URL.search)
+    const Routes        = window.AppConfig.routes
+
+    const isLoginView                   = HREF.includes(Routes.login)
+    const isRegistrationView            = HREF.includes(Routes.register)
+    const isPasswordResetRequestView    = HREF.includes(Routes.passwordreset) && !!!QUERY_PARAMS.get('token')
+    const isPasswordResetView           = HREF.includes(Routes.passwordreset) && !!QUERY_PARAMS.get('token')
+
+
+    const enableForm    = ref(true)
+    const errorMessage  = ref('')
+    const errorTimer    = ref(0)
 
     const userStore = useUserStore()
 
     const user = computed(() => userStore.user )
 
 
-    let errorMessage = ref('')
+    if (isPasswordResetView && !AppConfig.isValidToken) {
+        setError('Password reset token is invalid. Redirecting you to Password Reset Request page.')
+        errorTimer.value = 5
+        enableForm.value = false
+
+
+        const timerInterval = setInterval(() => {
+            errorTimer.value -= 1
+
+            if (errorTimer.value === 0) {
+                Router.push({ name: 'passwordreset' })
+                clearInterval(timerInterval)
+            }
+        }, 1000)
+    }
+
 
 
     function setError(err) {
@@ -146,8 +225,6 @@
 
 
     async function handleLogin(e) {
-        console.log(e)
-
         setError()
 
         const { email, password } = e
@@ -163,8 +240,6 @@
                 setError(res.message)
                 return
             }
-
-            console.log('user logged in', res.data.user)
 
             userStore.update(res.data.user)
 
@@ -199,8 +274,6 @@
         try {
             res = await Api.get('auth/logout')
 
-            console.log(res)
-
         } catch(err) {
             setError(err)
         }
@@ -212,6 +285,26 @@
 
     }
 
+
+
+    async function handlePasswordResetRequest(e) {
+
+        setError()
+
+        let res
+
+        try {
+
+            const { email } = e
+
+            res = await Api.post('auth/password-reset', {
+                email,
+            })
+
+        } catch(err) {
+            setError(err)
+        }
+    }
 
 
     async function handlePasswordReset(e) {
@@ -227,8 +320,6 @@
             res = await Api.post('auth/password-reset', {
                 email,
             })
-
-            console.log(res)
 
         } catch(err) {
             setError(err)

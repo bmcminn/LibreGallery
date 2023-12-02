@@ -39,6 +39,10 @@ class Email {
         $company    = array_query('company', $model);
         $user       = array_query('user', $model);
 
+        $userToEmail    = $user['email'];
+        // $userToName     = $user['fullname'];
+        $userToName     = $user['username'];
+
         // Create an instance; passing `true` enables exceptions
         $mail = new PHPMailer(true);
 
@@ -66,7 +70,7 @@ class Email {
 
 
         $mail->setFrom($company['emailFrom'], $company['name']);
-        $mail->addAddress($user['email'], $user['fullname']);     //Add a recipient
+        $mail->addAddress($userToEmail, $userToName);     //Add a recipient
         // $mail->addAddress('ellen@example.com');               //Name is optional
         $mail->addReplyTo($company['emailReply'], 'Contact');
         // $mail->addCC('cc@example.com');
@@ -90,8 +94,6 @@ class Email {
 
         return $template;
     }
-
-
 
 
 

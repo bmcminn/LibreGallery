@@ -9,7 +9,6 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use Slim\Psr7\Response as Response7;
 
-// -----
 
 class AppController {
 
@@ -20,13 +19,24 @@ class AppController {
         $filepath = path('/public/index.html');
         $body = file_get_contents($filepath);
 
-        $routes = json_encode([
+        $config = [
             'routes' => Config::get('public_routes'),
-        ]);
+        ];
+
+
+        // Pass token verification to client AppConfig
+        $hasToken = $req->getAttribute('hasToken');
+
+        if ($hasToken) {
+            $config['isValidToken'] = $req->getAttribute('isValidToken');
+        }
+
+
+        $config = json_encode($config);
 
         $src = <<<SRC
             <script>
-                window.AppConfig = $routes
+                window.AppConfig = $config
             </script>
         SRC;
 
@@ -42,5 +52,5 @@ class AppController {
 
 
 $app->get('/{path:.*}', AppController::class . ':app')
-    // ->add(\App\Middleware\UserIsLoggedIn::class)
+    ->add(\App\Middleware\ValidatePasswordResetToken::class)
 ;

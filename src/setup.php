@@ -131,7 +131,6 @@ Hash::setup();
 // DOCUMENT VARIOUS FOLDER LOCATIONS
 
 // TODO: adjust folder permissions and can test whether it works or not
-// TODO: abstract this to its own postinstall script to scaffold out folder structure
 mkdirs([
     [ Config::get('paths.cache_dir'),       0766 ],
     [ Config::get('paths.database_dir'),    0766 ],
@@ -139,17 +138,6 @@ mkdirs([
     [ Config::get('paths.sessions_dir'),    0766 ],
     [ Config::get('paths.views_dir'),       0766 ],
 ]);
-// foreach ([
-//     [ Config::get('paths.cache_dir'),       0766 ],
-//     [ Config::get('paths.database_dir'),    0766 ],
-//     [ Config::get('paths.logs_dir'),        0766 ],
-//     [ Config::get('paths.sessions_dir'),    0766 ],
-//     [ Config::get('paths.views_dir'),       0766 ],
-// ] as $path) {
-//     [ $filepath, $permissions ] = $path;
-//     if (is_dir($filepath)) { continue; }
-//     mkdir($filepath, $permissions, $recursive = true);
-// }
 
 
 Logger::setup([

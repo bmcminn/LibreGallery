@@ -149,13 +149,28 @@ class AuthController {
     }
 
 
+
+    public function passwordResetHandler(Request $req, Response $res) {
+
+        $query = $req->getQueryParams();
+
+        if ($query['token'] ?? false) {
+            return $this->passwordReset($req, $res);
+        }
+
+        return $this->passwordResetRequest($req, $res);
+
+    }
+
+
+
     /**
      * { function_description }
      *
      * @param      Request   $req    The request
      * @param      Response  $res    The resource
      */
-    public function passwordReset(Request $req, Response $res) {
+    public function passwordResetRequest(Request $req, Response $res) {
 
         $body = $req->getParsedBody();
 
@@ -214,13 +229,12 @@ class AuthController {
 
         $model = Config::get();
 
-        $model['token'] = $token;
-        $model['subject'] = 'Password Reset';
-        $model['user'] = $user->export();
-        $model['user']['fullname'] = 'USER FULL NAME';
+        $model['token']     = $token;
+        $model['subject']   = 'Password Reset';
+        $model['user']      = $user->export();
 
         $model['passwordResetUrl'] = implode('', [
-            $model['app']['url'],
+            array_query('app.url', $model),
             '/password-reset',
             '?token=',
             $token
