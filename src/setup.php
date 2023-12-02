@@ -4,6 +4,7 @@ use App\Helpers\Config;
 use App\Helpers\Hash;
 use App\Helpers\Logger;
 use App\Helpers\Template;
+use App\Helpers\Token;
 use App\Helpers\Validator;
 
 use App\Models\Session;
@@ -165,6 +166,9 @@ Session::setup([
 // Capture the origin IP address so we can compare as needed later
 Session::set('ipaddress', $_SERVER['REMOTE_ADDR'] ?? null);
 
+
+
+Token::setup();
 
 
 Template::setup([

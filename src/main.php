@@ -124,6 +124,14 @@ $app->options('/{routes:.+}', function (Request $req, Response $res) {
 
 
 
+$app->group('/rpc', function(RouteCollectorProxy $rpc) {
+
+
+
+});
+
+
+
 $app->group('/api', function(RouteCollectorProxy $api) {
 
 
@@ -131,17 +139,18 @@ $app->group('/api', function(RouteCollectorProxy $api) {
     // AUTH ROUTE HANDLERS
     //
 
-    $api->post('/auth/login',   [ Controllers\AuthController::class, 'login' ])
-        ;
+    $api->post('/auth/login',                   [ Controllers\AuthController::class, 'login' ]);
+    $api->post('/auth/register',                [ Controllers\AuthController::class, 'register' ]);
 
-    $api->post('/auth/logout',  [ Controllers\AuthController::class, 'logout' ])
+    $api->post('/auth/logout',                  [ Controllers\AuthController::class, 'logout' ])
         ->add(Middleware\VerifyUserAgent::class)
         ;
 
-    $api->post('/auth/password-reset', [ Controllers\AuthController::class, 'passwordReset' ])
+    $api->post('/auth/password-reset',          [ Controllers\AuthController::class, 'passwordReset' ])
         ;
 
-    $api->post('/auth/verify-password-reset', [ Controllers\AuthController::class, 'verifyPasswordReset' ])
+    // $api->post('/auth/verify-password-reset',   [ Controllers\AuthController::class, 'verifyRegistration' ])
+    $api->post('/auth/verify-password-reset',   [ Controllers\AuthController::class, 'verifyPasswordReset' ])
         ;
 
 

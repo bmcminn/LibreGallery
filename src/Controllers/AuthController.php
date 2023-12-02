@@ -159,6 +159,7 @@ class AuthController {
 
         $body = $req->getParsedBody();
 
+
         $data = Validator::validate($body, [
             self::$schema['email'],
         ]);
@@ -168,12 +169,23 @@ class AuthController {
             return errorResponse($data['messages'], HTTP_BAD_REQUEST);
         }
 
-        $user = R::findOne('user', 'email = ? OR username LIKE ? ', [ $data['email'], $data['email'] ]);
+        try {
+            $user = R::findOne('user', 'email = :email', [ 'email' => $data['email'] ]);
 
+        } catch (\Exception $err) {
+            return errorResponse($err->getMessage());
+        }
 
         // lie to the user cuz we don't need to leak that the user credentials are valid or invalid
         if (isEmpty($user)) {
-            return errorResponse($this->messages['passwordResetConfirmation'], HTTP_SUCCESS);
+
+            $model = [
+               'data'       => $data,
+               'message'    => $this->messages['passwordResetConfirmation'] . ' BUT THERES MORE',
+               'user'       => $user,
+            ];
+
+            return jsonResponse($model, HTTP_SUCCESS);
         }
 
 
@@ -188,12 +200,12 @@ class AuthController {
 
             $bean->token    = $token;
             $bean->type     = Token::TYPE_PASSWORD_RESET;
-            $bean->user_id  = $user->uuid;
+            $bean->user_uuid  = $user->uuid;
 
             $id = R::store($bean);
 
         } catch(\Exception $err) {
-            return errorResponse($err->getMessage(), HTTP_SERVER_ERROR);
+            return errorResponse('An error was encountered during your request.', HTTP_SERVER_ERROR);
 
         }
 
@@ -203,20 +215,24 @@ class AuthController {
         $model = Config::get();
 
         $model['token'] = $token;
+        $model['subject'] = 'Password Reset';
         $model['user'] = $user->export();
+        $model['user']['fullname'] = 'USER FULL NAME';
 
         $model['passwordResetUrl'] = implode('', [
             $model['app']['url'],
+            '/password-reset',
             '?token=',
             $token
         ]);
+
+        $model['template'] = 'emails/password-reset';
 
         $emailSent = Email::sendMessage($model);
 
         if (!$emailSent) {
             return errorResponse('Email not sent', HTTP_SERVER_ERROR);
         }
-
 
         return jsonResponse([ 'message' => '' ]);
     }

@@ -46,30 +46,6 @@ services:
         restart: always
 
 
-    # apache:
-    #     container_name: apache
-    #     image: webdevops/apache:latest
-    #     environment:
-    #         - PHP_SOCKET=php:9000
-    #     links:
-    #         - php
-    #     working_dir: /app
-    #     links:
-    #         - smtp4dev:smtp4dev
-    #     ports:
-    #         # - 8080:80
-    #         # - 8080:8080
-    #         # - 80:80
-    #         - 3005:80
-    #         - 443:443
-    #     volumes:
-    #         - .:/app
-    #         - ./.container/logs:/var/www/logs
-    #         # - .docker/php.ini:/opt/bitnami/php/lib/php.ini
-    #         # - .docker/php.ini:/usr/local/etc/php/php.ini
-    #     restart: always
-
-
     smtp4dev:
         container_name: smtp4dev
         image: rnwood/smtp4dev:v3
