@@ -7,7 +7,8 @@
             "App\\": "src/"
         },
         "files": [
-            "src/lib/functions.php",
+            "src/lib/helpers.php",
+            "src/lib/macros.php",
             "src/lib/rb-sqlite.php",
             "src/setup.php"
         ]
