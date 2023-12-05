@@ -77,29 +77,42 @@ function array_query(string $keyPath, array $data) {
 }
 
 
-function now() {
-    return floor(microtime(true) * 1000);
-}
-
-function minutes() {
-    return 1000 * 60;
-}
-
-function hours() {
-    return minutes() * 60;
-}
-
-function days() {
-    return hours() * 24;
+function dateFromTimestamp(int $timestamp): \DateTime {
+    return (new DateTime())->setTimestamp($timestamp);
 }
 
 
-function path(string $path) {
+function now(int $offset = 0): int {
+    return (int) (floor(microtime(true)) + $offset);
+}
+
+function millis($seconds): int {
+    return (int) floor($seconds *= 1000);
+}
+
+function seconds(int $n = 1): int {
+    return $n;
+}
+
+function minutes(int $n = 1): int {
+    return seconds(60) * $n;
+}
+
+function hours(int $n = 1): int {
+    return minutes(60) * $n;
+}
+
+function days(int $n = 1): int {
+    return hours(24) * $n;
+}
+
+
+function path(string $path): string {
     return getcwd() . '/../' . trim($path, '/');
 }
 
 
-function url(string $path, array $query=[]) {
+function url(string $path, array $query=[]): string {
 
     // $host = $_SERVER['HTTP_ORIGIN'] ?? $_SERVER['HTTP_HOST'];
 

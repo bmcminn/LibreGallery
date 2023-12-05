@@ -59,3 +59,10 @@ nav > ul {
 .text-center { text-align: center }
 .text-left { text-align: left }
 .text-right { text-align: right }
+
+
+
+
+.error-message {
+    color: red;
+}

@@ -146,7 +146,7 @@ $app->group('/api', function(RouteCollectorProxy $api) {
         ->add(Middleware\VerifyUserAgent::class)
         ;
 
-    $api->post('/auth/password-reset',          [ Controllers\AuthController::class, 'passwordReset' ])
+    $api->post('/auth/password-reset',          [ Controllers\AuthController::class, 'passwordResetHandler' ])
         ;
 
     // $api->post('/auth/verify-password-reset',   [ Controllers\AuthController::class, 'verifyRegistration' ])

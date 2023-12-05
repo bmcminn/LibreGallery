@@ -1,5 +1,10 @@
 
 
+export function isEmpty(value) {
+    return !!!value
+}
+
+
 
 export function lsGetItem(key) {
     let value = localStorage.getItem(key)
