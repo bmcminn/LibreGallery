@@ -144,4 +144,25 @@ class Token {
         return self::generate('haval256,3', $options);
     }
 
+
+
+    function generateJWT(array $subject=[], array $roles=[], int $nbf=0) {
+        $secret = env('JWT_SECRET');
+
+        $token = [];
+
+        $now = time();
+
+        $token['iss'] = env('APP_HOSTNAME');
+        $token['exp'] = $now + hours(env('JWT_TTL', 24));
+        $token['iat'] = $now;
+        $token['nbf'] = $now + $nbf;
+        $token['sub'] = $subject;
+        $token['scope'] = $roles;
+
+        $encoding = explode('|', env('JWT_ALGORITHM'));
+
+        return JWT::encode($token, $secret, $encoding[0]);
+    }
+
 }

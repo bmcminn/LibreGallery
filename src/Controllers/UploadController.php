@@ -62,11 +62,48 @@ class UploadController extends BaseController {
         'ReadAllUploadsByUser' => <<<SQL
         -- READ ALL UPLOADS FROM A GIVEN USER
         SELECT *
-        FROM upload WHERE user_id = ?
+        FROM upload WHERE user_id = :user_id
         ORDER BY created_at
-        LIMIT ?
-        OFFSET ?
+        LIMIT :limit
+        OFFSET :offset
         SQL,
+
+
+        // -- READ ALL COLLECTIONS FOR A GIVEN USER
+        // SELECT c.*
+        // FROM user_collections as uc
+        // INNER JOIN collection as c
+        //     ON uc.user_id = :user_id
+        //         AND c.id = uc.collection_id
+
+        // -- READ ALL UPLOADS FROM A GIVEN COLLECTION UUID
+        // SELECT c.uuid as collection_uuid, c.persmissions, u.*
+        // FROM collection_uploads as cu
+        // INNER JOIN collection as c
+        //     ON c.uuid = :user_uuid
+        // INNER JOIN upload as u
+        //     ON cu.upload_id = u.id
+
+        // -- ==========
+
+        // SELECT u.id, uc.*, c.*
+        // FROM user AS u
+        //     LEFT JOIN user_collections AS uc
+        //         ON u.id = uc.user_id
+        //     LEFT JOIN collection AS c
+        //         ON uc.collection_id = c.id
+        //     LEFT JOIN collection_uploads as cu
+        //         ON cu.collection_id = cu.collection_id
+
+        // SELECT *
+        // FROM user_collections as uc
+        // INNER JOIN collection as c
+        //     ON uc.user_id = 1
+        //         AND c.id = uc.collection_id
+        // LEFT JOIN collection_uploads as cu
+        //     ON cu.collection_id = c.id
+        // LEFT JOIN upload as u
+        //     ON u.id = cu.upload_id
     ];
 
 
