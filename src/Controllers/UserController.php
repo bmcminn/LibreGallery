@@ -46,7 +46,7 @@ class UserController extends BaseController {
      *
      * @return     <type>    The users.
      */
-    public function getUsers(Request $req, Response $res, array $params) {
+    public function index(Request $req, Response $res, array $params) {
         // $body = $req->getParsedBody();
         if (!$this->isAdmin()) {
             return errorResponse('action is not permitted', HTTP_UNAUTHORIZED);

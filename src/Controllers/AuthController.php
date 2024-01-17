@@ -3,12 +3,16 @@
 namespace App\Controllers;
 
 use App\Helpers\Config;
+use App\Helpers\Email;
 use App\Helpers\Hash;
 use App\Helpers\Template;
-use App\Helpers\Email;
 use App\Helpers\Token;
 use App\Helpers\Validator;
+
+use App\Enums\TokenType;
+
 use App\Models\Session;
+use App\Models\TokenModel;
 
 
 use Psr\Http\Message\ResponseInterface as Response;
@@ -29,10 +33,11 @@ class AuthController {
     ];
 
 
-
     public static array $schema = [
-        'email'     => [ 'email',       'required|email', FILTER_SANITIZE_EMAIL ],
-        'password'  => [ 'password',    'required|min:9', FILTER_SANITIZE_SPECIAL_CHARS ],
+        'email'             => [ 'email',           'required|email', FILTER_SANITIZE_EMAIL ],
+        'password'          => [ 'password',        'required|min:9', FILTER_SANITIZE_SPECIAL_CHARS ],
+        'passwordconfirm'   => [ 'passwordconfirm', 'required|same:password', FILTER_SANITIZE_SPECIAL_CHARS ],
+        'token'             => [ 'token',           'required|min:30', FILTER_SANITIZE_SPECIAL_CHARS ],
     ];
 
 
@@ -141,10 +146,12 @@ class AuthController {
         $body = $req->getParsedBody();
 
         $data = Validator::validate($body, [
-            [ 'email',              'required|email',   FILTER_SANITIZE_EMAIL           ],
-            [ 'password',           'required|min:9',   FILTER_SANITIZE_SPECIAL_CHARS   ],
-            [ 'password',           'required|min:8',               'htmlspecialchars' ],
-            [ 'password_confirm',   'required|same:password',       'htmlspecialchars' ],
+            self::$schema['email'],
+            self::$schema['password'],
+            self::$schema['passwordconfirm'],
+            // [ 'email',              'required|email',           FILTER_SANITIZE_EMAIL           ],
+            // [ 'password',           'required|min:9',           FILTER_SANITIZE_SPECIAL_CHARS   ],
+            // [ 'password_confirm',   'required|same:password',   'htmlspecialchars' ],
         ]);
     }
 
@@ -204,25 +211,22 @@ class AuthController {
         }
 
 
-        // create a password reset token in database we send to the users email address
-        $token = Token::generateSHA256([
-            'secret' => 'PasswordResetTokenSecretPhraseHere'
-        ]);
-
-        // generate a token record
+        // if there is already a reset token issued, invalidate it
         try {
-            $bean = R::dispense('token');
+            clearOldPasswordResetTokens($user->uuid);
 
-            $bean->token        = $token;
-            $bean->type         = Token::TYPE_PASSWORD_RESET;
-            $bean->userUuid     = $user->uuid;
-            $bean->expiresAt    = dateFromTimestamp(now() + days(1));
+        } catch (\Exception $err) {
+            return errorResponse($err->getMessage(), HTTP_SERVER_ERROR);
+        }
 
-            $id = R::store($bean);
+
+        // create a password reset token in database we send to the users email address
+        try {
+            $token = createPasswordResetToken($user->uuid);
 
         } catch(\Exception $err) {
-            return errorResponse('An error was encountered during your request.', HTTP_SERVER_ERROR);
-
+            return errorResponse($err->getMessage(), HTTP_SERVER_ERROR);
+            // return errorResponse('An error was encountered during your request.', HTTP_SERVER_ERROR);
         }
 
 
@@ -238,7 +242,7 @@ class AuthController {
             array_query('app.url', $model),
             '/password-reset',
             '?token=',
-            $token
+            $token,
         ]);
 
         $model['template'] = 'emails/password-reset';
@@ -261,7 +265,38 @@ class AuthController {
      */
     public function verifyPasswordReset(Request $req, Response $res) {
 
+        $body = $req->getParsedBody();
 
+        $data = Validator::validate($body, [
+            self::$schema['token'],
+            self::$schema['password'],
+            self::$schema['passwordconfirm'],
+        ]);
+
+        if (isset($data['messages'])) {
+            return errorResponse($data['messages'], HTTP_BAD_REQUEST);
+        }
+
+        try {
+            $token = findToken($data['token'], TokenType::PASSWORD_RESET);
+
+            $user = R::findOne('user', 'uuid = :uuid', [ 'uuid' => $token->user_uuid ]);
+
+            $user->password = Hash::password($data['password']);
+
+            // update user
+            R::store($user);
+
+            // trash token from being used again
+            R::trash($token);
+
+        } catch(\Execption $err) {
+            errorResponse($err);
+        }
+
+        return jsonResponse([
+            'message' => 'success',
+        ]);
     }
 
 

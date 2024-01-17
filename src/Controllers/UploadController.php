@@ -119,7 +119,7 @@ class UploadController extends BaseController {
      *
      * @return     <type>    The users.
      */
-    public function getUserLibraries(Request $req, Response $res, array $params) {
+    public function index(Request $req, Response $res, array $params) {
         if (!$this->isAdmin()) {
             return errorResponse('action is not permitted', HTTP_UNAUTHORIZED);
         }
@@ -136,11 +136,11 @@ class UploadController extends BaseController {
 
         $model  = [];
         $model['pagination']    = $this->paginate($index, $limit, $userCount);
-        $model['users']         = R::exportAll($users);
+        $model['collections']   = R::exportAll($users);
 
-        foreach ($model['users'] as $i => $user) {
-            $model['users'][$i] = $this->normalizeUser($user);
-        }
+        // foreach ($model['users'] as $i => $user) {
+        //     $model['users'][$i] = $this->normalizeUser($user);
+        // }
 
         return jsonResponse($model);
     }
@@ -155,7 +155,7 @@ class UploadController extends BaseController {
      *
      * @return     <type>    ( description_of_the_return_value )
      */
-    public function readLibrary(Request $req, Response $res, array $params) {
+    public function readCollection(Request $req, Response $res, array $params) {
 
         $id = $params['id'] ?? null;
 
@@ -173,7 +173,7 @@ class UploadController extends BaseController {
     }
 
 
-    public function updateLibrary(Request $req, Response $res, array $params) {
+    public function updateCollection(Request $req, Response $res, array $params) {
         $id = $params['id'] ?? null;
 
         if (!$this->isUser($id) || !$this->isAdmin()) {
@@ -192,7 +192,7 @@ class UploadController extends BaseController {
     // HELPERS
     //
 
-    private function normalizeLibrary($user, array $overrides = null) {
+    private function normalizeCollection($user, array $overrides = null) {
         $user = $this->filterModel($user, $overrides);
 
         return $user;

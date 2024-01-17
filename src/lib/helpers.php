@@ -1,10 +1,12 @@
 <?php
 
 use App\Classes\Console;
+
+use App\Helpers\Token;
+
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\UploadedFileInterface;
 use Rakit\Validation\Validator;
-use Ramsey\Uuid\Uuid;
 use RedBeanPHP\Facade as R;
 
 
@@ -217,9 +219,6 @@ function dbg() {
     file_put_contents('php://stdout', implode("\n", $msg) . "\n");
 }
 
-function uuid4() {
-    return Ramsey\Uuid\Uuid::uuid4()->toString();
-}
 
 
 /**
@@ -256,10 +255,10 @@ function fromMicrotime(int $timestamp) :int {
 
 
 use App\Logger;
-use Pecee\SimpleRouter\SimpleRouter as Router;
-use Pecee\Http\Url;
-use Pecee\Http\Response;
-use Pecee\Http\Request;
+// use Pecee\SimpleRouter\SimpleRouter as Router;
+// use Pecee\Http\Url;
+// use Pecee\Http\Response;
+// use Pecee\Http\Request;
 
 
 /**
@@ -277,63 +276,63 @@ use Pecee\Http\Request;
  * @return \Pecee\Http\Url
  * @throws \InvalidArgumentException
  */
-function url(?string $name = null, $parameters = null, ?array $getParams = null) :Url {
-    return Router::getUrl($name, $parameters, $getParams);
-}
+// function url(?string $name = null, $parameters = null, ?array $getParams = null) :Url {
+//     return Router::getUrl($name, $parameters, $getParams);
+// }
 
-/**
- * @return \Pecee\Http\Response
- */
-function response() :Response {
-    return Router::response();
-}
+// /**
+//  * @return \Pecee\Http\Response
+//  */
+// function response() :Response {
+//     return Router::response();
+// }
 
-/**
- * @return \Pecee\Http\Request
- */
-function request() :Request {
-    return Router::request();
-}
+// /**
+//  * @return \Pecee\Http\Request
+//  */
+// function request() :Request {
+//     return Router::request();
+// }
 
-/**
- * Get input class
- * @param string|null $index Parameter index name
- * @param string|null $defaultValue Default return value
- * @param array ...$methods Default methods
- * @return \Pecee\Http\Input\InputHandler|array|string|null
- */
-function input($index = null, $defaultValue = null, ...$methods) {
-    if ($index !== null) {
-        return request()->getInputHandler()->value($index, $defaultValue, ...$methods);
-    }
+// /**
+//  * Get input class
+//  * @param string|null $index Parameter index name
+//  * @param string|null $defaultValue Default return value
+//  * @param array ...$methods Default methods
+//  * @return \Pecee\Http\Input\InputHandler|array|string|null
+//  */
+// function input($index = null, $defaultValue = null, ...$methods) {
+//     if ($index !== null) {
+//         return request()->getInputHandler()->value($index, $defaultValue, ...$methods);
+//     }
 
-    return request()->getInputHandler();
-}
+//     return request()->getInputHandler();
+// }
 
-/**
- * @param string $url
- * @param int|null $code
- */
-function redirect(string $url, ?int $code = null) :void {
-    if ($code !== null) {
-        response()->httpCode($code);
-    }
+// /**
+//  * @param string $url
+//  * @param int|null $code
+//  */
+// function redirect(string $url, ?int $code = null) :void {
+//     if ($code !== null) {
+//         response()->httpCode($code);
+//     }
 
-    response()->redirect($url);
-}
+//     response()->redirect($url);
+// }
 
-/**
- * Get current csrf-token
- * @return string|null
- */
-function csrf_token() :?string {
-    $baseVerifier = Router::router()->getCsrfVerifier();
-    if ($baseVerifier !== null) {
-        return $baseVerifier->getTokenProvider()->getToken();
-    }
+// /**
+//  * Get current csrf-token
+//  * @return string|null
+//  */
+// function csrf_token() :?string {
+//     $baseVerifier = Router::router()->getCsrfVerifier();
+//     if ($baseVerifier !== null) {
+//         return $baseVerifier->getTokenProvider()->getToken();
+//     }
 
-    return null;
-}
+//     return null;
+// }
 
 function base_path($path='') {
     return __DIR__ . "/../../{$path}";
@@ -371,23 +370,23 @@ if (!function_exists('is_dev')) {
     }
 }
 
-/**
- * Valdation macro for Rakit Validator
- * @sauce  https://github.com/rakit/validation
- * @param  array    $data   Associative array of values to validate
- * @param  array    $config Collection of parameters and their validation controls per the Rakit Validation documentation
- * @return array            If errors, returns list of errors; Else empty array
- */
-function validate($data, $config) {
-    $validator = new \Rakit\Validation\Validator;
-    // $validation = $validator->validate($_POST + $_FILES, [
-    $validation = $validator->validate($data, $config);
-    if ($validation->fails()) {
-        return $validation->errors();
-    }
+// /**
+//  * Valdation macro for Rakit Validator
+//  * @sauce  https://github.com/rakit/validation
+//  * @param  array    $data   Associative array of values to validate
+//  * @param  array    $config Collection of parameters and their validation controls per the Rakit Validation documentation
+//  * @return array            If errors, returns list of errors; Else empty array
+//  */
+// function validate($data, $config) {
+//     $validator = new \Rakit\Validation\Validator;
+//     // $validation = $validator->validate($_POST + $_FILES, [
+//     $validation = $validator->validate($data, $config);
+//     if ($validation->fails()) {
+//         return $validation->errors();
+//     }
 
-    return [];
-}
+//     return [];
+// }
 
 /**
  * Filters an associative array to only have the data you want
@@ -395,9 +394,9 @@ function validate($data, $config) {
  * @param  array    $list   List of properties to be captured
  * @return array            Filtered list of desired properties
  */
-function only($data, array $list) :array {
+function array_allow_keys(array $data, array $keys) :array {
     $res = [];
-    foreach ($list as $i => $key) {
+    foreach ($keys as $i => $key) {
         if ($data[$key]) {
             $res[$key] = $data[$key];
         }
@@ -412,7 +411,7 @@ function only($data, array $list) :array {
  * @param  array    $list   List of properties to be excluded
  * @return array            Filtered list of desired properties
  */
-function except($data, $list=[]) :array {
+function array_disallow_keys($data, $list=[]) :array {
     foreach ($list as $i => $key) {
         if ($data[$key]) {
             unset($data[$key]);
@@ -428,7 +427,7 @@ function except($data, $list=[]) :array {
  * @param  array    $list List of required properties to be checked
  * @return boolean        True if passes, false if failed
  */
-function has(array $data, array $list=[]) :boolean {
+function has(array $data, array $list=[]) :bool {
     foreach ($list as $i => $key) {
         if (!$data[$key]) {
             throw new \Exception("Missing property: Data must have property {$key}");
@@ -504,12 +503,10 @@ function moveUploadedFile(string $directory, UploadedFileInterface $uploadedFile
         mkdir($directory, $permissions, true);
     }
 
-    $extension = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
+    $extension      = pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
     // see http://php.net/manual/en/function.random-bytes.php
-    // $basename = bin2hex(random_bytes(8));
-    $basename = uuid(); // Uuid::uuid4();
-    // $basename = Uuid::uuid4()->toString();
-    $filename = sprintf('%s.%0.8s', $basename, $extension);
+    $basename       = Token::generateUuid(); // Uuid::uuid4();
+    $filename       = sprintf('%s.%0.8s', $basename, $extension);
     $uploadedFile->moveTo($directory . DIRECTORY_SEPARATOR . $filename);
     return $filename;
 }
@@ -704,28 +701,6 @@ function dateToUTC(string $date, string $format='Y-m-d H:i:s'): DateTime {
     return new DateTime($date);
 }
 
-/**
- * Composes a reasonably fully qualified URL based on $_SERVER properties
- * @source https://www.geeksforgeeks.org/get-the-full-url-in-php/
- * @return string The URL of the current page
- */
-
-function getRoute($includePath = true) {
-    $url = 'http';
-    if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
-        $url .= 's';
-    }
-
-    $url .= "://";
-    $url .= $_SERVER['HTTP_HOST'];
-    if ($includePath) {
-        $url .= $_SERVER['REQUEST_URI'];
-    }
-
-    return $url;
-    // Print the link
-    // return parse_url($url);
-}
 
 /**
  * [getImageURI description]

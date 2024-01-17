@@ -4,6 +4,7 @@ namespace App\Middleware;
 use App\Helpers\Config;
 use App\Helpers\Logger;
 use App\Helpers\Token;
+use App\Enums\TokenType;
 use App\Models\Session;
 
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -33,14 +34,13 @@ class ValidatePasswordResetToken {
 
         $isPasswordResetRoute = str_contains($route, '/password-reset');
 
-
         if ($isPasswordResetRoute && !!$token) {
 
             $bean = R::findOne(
                 'token',
                 'type = :type AND token = :token',
                 [
-                    'type' => Token::TYPE_PASSWORD_RESET,
+                    'type'  => TokenType::PASSWORD_RESET,
                     'token' => $token,
                 ]
             );

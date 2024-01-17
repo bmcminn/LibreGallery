@@ -4,6 +4,7 @@ use App\Helpers\Config;
 use App\Helpers\Email;
 use App\Helpers\Hash;
 use App\Helpers\Validator;
+use App\Helpers\Token;
 
 use App\Models\Session;
 use App\Models\User;
@@ -48,7 +49,7 @@ class AuthController {
         // send verification email
         // TODO: finish integrating email verification email
 
-        $token = generateOTP();
+        $token = Token::generateOTP();
 
         Session::set('token', $token);
 
@@ -90,7 +91,7 @@ class AuthController {
 
         // $model = Config::get();
         $model['user']  = $user;
-        $model['otp'] = generateOTP(6, OTP_ALPHANUMERIC);
+        $model['otp']   = Token::generateOTP(6, Token::OTP_ALPHANUMERIC);
 
         Email::sendLoginOTP($model);
 

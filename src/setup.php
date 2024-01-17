@@ -64,12 +64,13 @@ Config::setup([
     ],
 
     'paths' => [
-        'cache_dir'     => path('/storage/cache'),
-        'database_dir'  => path('/storage/database'),
-        'database_file' => path('/storage/database/main.db'),
-        'logs_dir'      => path('/storage/logs'),
-        'sessions_dir'  => path('/storage/sessions'),
-        'views_dir'     => path('/src/views'),
+        'cache_dir'         => path('/storage/cache'),
+        'database_dir'      => path('/storage/database'),
+        'database_file'     => path('/storage/database/main.db'),
+        'logs_dir'          => path('/storage/logs'),
+        'migrations_dir'    => path('/migrations'),
+        'sessions_dir'      => path('/storage/sessions'),
+        'views_dir'         => path('/src/views'),
     ],
 
     'public_routes' => [
@@ -131,13 +132,20 @@ Hash::setup();
 // DOCUMENT VARIOUS FOLDER LOCATIONS
 
 // TODO: adjust folder permissions and can test whether it works or not
-mkdirs([
+$dirs = [
     [ Config::get('paths.cache_dir'),       0766 ],
     [ Config::get('paths.database_dir'),    0766 ],
     [ Config::get('paths.logs_dir'),        0766 ],
     [ Config::get('paths.sessions_dir'),    0766 ],
     [ Config::get('paths.views_dir'),       0766 ],
-]);
+];
+
+if (is_dev()) {
+    array_push($dirs, [ Config::get('paths.migrations_dir'),  0766 ]);
+}
+
+
+mkdirs($dirs);
 
 
 Logger::setup([
@@ -153,7 +161,6 @@ Session::setup([
 
 // Capture the origin IP address so we can compare as needed later
 Session::set('ipaddress', $_SERVER['REMOTE_ADDR'] ?? null);
-
 
 
 Token::setup();
@@ -172,3 +179,14 @@ Template::setup([
 
 R::setup('sqlite:' . Config::get('paths.database_file'));
 R::useFeatureSet( 'novice/latest' );
+
+if (is_dev()) {
+    $mlPath = path(Config::get('paths.migrations_dir', 'migration_' . date('Y-m-d') . '.sql'));
+    $ml = new MigrationLogger($mlPath);
+
+    R::getDatabaseAdapter()
+        ->getDatabase()
+        ->setLogger($ml)
+        ->setEnableLogging(true)
+        ;
+}

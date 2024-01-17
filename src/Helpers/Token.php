@@ -2,7 +2,12 @@
 
 namespace App\Helpers;
 
+use Ramsey\Uuid\Uuid;
+
 use ErrorException;
+
+
+// TODO: move this into the Hash.php class?
 
 
 /**
@@ -13,13 +18,7 @@ use ErrorException;
  */
 class Token {
 
-    const TYPE_PASSWORD_RESET   = 'passwordreset';
-    const TYPE_JWT              = 'jwt';
-    const TYPE_USER_AUTH        = 'userauth';
-
-
     private static array $algos = [];
-
 
     /**
      * { function_description }
@@ -114,6 +113,10 @@ class Token {
     }
 
 
+    public static function generateUuid() {
+        return Ramsey\Uuid\Uuid::uuid4()->toString();
+    }
+
 
     public static function generateMD5(array $options = []) {
         return self::generate('md5', $options);
@@ -146,6 +149,42 @@ class Token {
 
 
 
+    public const OTP_ALPHANUMERIC  = 00000001;
+    public const OTP_ALPHA         = 00000010;
+    public const OTP_NUMERIC       = 00000100;
+    public const OTP_MIXED_CASE    = 00001000;
+    // define('OTP_ALLOW_PUNCTUATION', 00001000);
+
+    function generateOTP(int $length, int $flags = 0, int $charRange = null) {
+
+        $length     = clamp($length, 2, 256);
+        $chars      = "0123456789ABCDEFGHIKLMNOPQRSTUVWXYZ_-";
+        $charRange  = $charRange ?? strlen($chars);
+        $flags      = $flags ?? self::OTP_ALPHANUMERIC;
+        $start      = $flags & self::OTP_ALPHA    ? 10 : 0;
+        $end        = $flags & self::OTP_NUMERIC  ? 10 : $charRange;
+
+        $charRange  = clamp($charRange, 2, $end);
+
+        $otp = '';
+
+        for ($i=0; $i < $length; $i++) {
+            $ci = rand($start, $end - 1);
+            $char = $chars[$ci];
+
+            if ($flags & self::OTP_MIXED_CASE) {
+                $char = !!rand(0,1) ? strtolower($char) : $char;
+            }
+
+            $otp .= $char;
+        }
+
+        return $otp;
+    }
+
+
+
+
     function generateJWT(array $subject=[], array $roles=[], int $nbf=0) {
         $secret = env('JWT_SECRET');
 
@@ -164,5 +203,6 @@ class Token {
 
         return JWT::encode($token, $secret, $encoding[0]);
     }
+
 
 }

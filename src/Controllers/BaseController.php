@@ -73,10 +73,8 @@ class BaseController {
 
 
     protected function isAdmin() {
-
-        $user = R::findOne('user', 'uuid = ?', [ Session::get('user_id') ]);
-        return $user->is_admin;
-        // return !!Session::get('is_admin');
+        $user = R::findOne('user', 'uuid = :uuid', [ 'uuid' => Session::get('user_id') ]);
+        return str_contains($user->roles, 'admin');
     }
 
 

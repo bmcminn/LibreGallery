@@ -164,7 +164,7 @@ $app->group('/api', function(RouteCollectorProxy $api) {
         //
 
         $client->post('/users/{uuid}',          [ Controllers\UserController::class, 'createUser' ]);
-        $client->get('/users',                  [ Controllers\UserController::class, 'readUsers' ]);
+        $client->get('/users',                  [ Controllers\UserController::class, 'index' ]);
         $client->get('/users/{uuid}',           [ Controllers\UserController::class, 'readUser' ]);
         $client->put('/users/{uuid}',           [ Controllers\UserController::class, 'updateUser' ]);
         $client->delete('/users/{uuid}',        [ Controllers\UserController::class, 'deleteUser' ]);
@@ -175,7 +175,7 @@ $app->group('/api', function(RouteCollectorProxy $api) {
         //
 
         $client->post('/collections/{uuid}',    [ Controllers\UploadController::class, 'createCollection' ]);
-        $client->get('/collections',            [ Controllers\UploadController::class, 'readCollections' ]);
+        $client->get('/collections',            [ Controllers\UploadController::class, 'index' ]);
         $client->get('/collections/{uuid}',     [ Controllers\UploadController::class, 'readCollection' ]);
         $client->put('/collections/{uuid}',     [ Controllers\UploadController::class, 'updateCollection' ]);
         $client->delete('/collections/{uuid}',  [ Controllers\UploadController::class, 'deleteCollection' ]);

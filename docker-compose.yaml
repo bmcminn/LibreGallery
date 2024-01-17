@@ -26,6 +26,8 @@ services:
             php.error_reporting: E_ALL
             PHP_DISPLAY_ERRORS: 1
 
+            APP_ENV: development
+
             PHP_POST_MAX_SIZE: 80M
             PHP_UPLOAD_MAX_FILESIZE: 200M
             PHP_MEMORY_LIMIT: 521M
