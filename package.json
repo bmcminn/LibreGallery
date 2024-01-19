@@ -8,7 +8,7 @@
     "dev-server": "composer run dev",
     "dev-client": "npm run client -- run build -- --watch",
     "client": "npm --prefix ./client",
-    "--postinstall": "composer install && npm run client -- install",
+    "--postinstall": "php composer.phar install && npm run client -- install",
     "emails": "node .bin/emails.js",
     "mjml:build": "npm run emails -- --build",
     "test-emails": "php _test/test-emails.php"

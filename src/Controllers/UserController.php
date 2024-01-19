@@ -6,6 +6,7 @@ use App\Helpers\Hash;
 use App\Helpers\Template;
 use App\Helpers\Validator;
 use App\Models\Session;
+use App\Models\User;
 
 
 use Psr\Http\Message\ResponseInterface as Response;
@@ -22,6 +23,7 @@ class UserController extends BaseController {
     protected $table = 'user';
 
     protected $pageLimit = 10;
+    protected $pageLimitMax = 100;
 
     protected $modelSchema = [
         'id'            => 'int',
@@ -38,7 +40,7 @@ class UserController extends BaseController {
 
 
     /**
-     * Gets the users.
+     * Gets all users.
      *
      * @param      Request   $req     The request
      * @param      Response  $res     The resource
@@ -52,15 +54,15 @@ class UserController extends BaseController {
             return errorResponse('action is not permitted', HTTP_UNAUTHORIZED);
         }
 
-        $userCount = R::count('user');
+        $userCount = UserModel::count(); // R::count($this->table);
 
-        $limit  = $this->pageLimit;
+        $limit  = max($params['limit']) ?? $this->pageLimit;
 
         $index  = clamp($params['index'] ?? 0, 0, ceil($userCount / $limit));
 
         $offset = $index * $limit;
 
-        $users  = $this->readAll("LIMIT ? OFFSET ?", [ $limit, $offset ]);
+        $users  = UserModel::index($limit, $offset);
 
         $model  = [];
         $model['pagination']    = $this->paginate($index, $limit, $userCount);
@@ -74,6 +76,11 @@ class UserController extends BaseController {
     }
 
 
+    public function create(Request $req, Response $res, array $params) {
+
+    }
+
+
     /**
      * Reads an user.
      *
@@ -83,25 +90,29 @@ class UserController extends BaseController {
      *
      * @return     <type>    ( description_of_the_return_value )
      */
-    public function readUser(Request $req, Response $res, array $params) {
+    public function read(Request $req, Response $res, array $params) {
 
         $id = $params['id'] ?? null;
 
         if (!$id) { return errorResponse('request missing required "id" parameter', HTTP_BAD_REQUEST); }
 
-        $user = R::findOne($this->table, 'uuid = ?', [ $id ]);
-
+        $user = R::findOne($this->table, 'uuid = :uuid', [ 'uuid' => $id ]);
 
         $model = [];
         $model['user'] = $user->export();
 
         return jsonResponse($model);
-
-
     }
 
 
-    public function updateUser(Request $req, Response $res, array $params) {
+    /**
+     * [update description]
+     * @param  Request  $req    [description]
+     * @param  Response $res    [description]
+     * @param  array    $params [description]
+     * @return [type]           [description]
+     */
+    public function update(Request $req, Response $res, array $params) {
 
         $id = $params['id'] ?? null;
 
@@ -109,12 +120,9 @@ class UserController extends BaseController {
             return errorResponse('action is not permitted', HTTP_UNAUTHORIZED);
         }
 
-        $user = R::findOne($this->table, 'uuid = ?', [ $id ]);
+        $user = R::findOne($this->table, 'uuid = :uuid', [ 'uuid' => $id ]);
 
         $body = $req->getParsedBody();
-
-
-
 
         $model = [];
 

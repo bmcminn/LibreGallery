@@ -42,22 +42,30 @@ function redirect(string $path, int $status=302) : Response {
 function getRoute(Request $req) {
     $ctx = RouteContext::fromRequest($req);
     return $ctx->getRoute();
-
-    // $url = 'http';
-    // if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
-    //     $url .= 's';
-    // }
-
-    // $url .= "://";
-    // $url .= $_SERVER['HTTP_HOST'];
-    // if ($includePath) {
-    //     $url .= $_SERVER['REQUEST_URI'];
-    // }
-
-    // return $url;
-    // // Print the link
-    // // return parse_url($url);
 }
+
+
+
+// /**
+//  * Composes a reasonably fully qualified URL based on $_SERVER properties
+//  * @source https://www.geeksforgeeks.org/get-the-full-url-in-php/
+//  * @return string The URL of the current page
+//  */
+// function getRoute($includePath = true) {
+//     $url = 'http';
+//     if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+//         $url .= 's';
+//     }
+
+//     $url .= "://";
+//     $url .= $_SERVER['HTTP_HOST'];
+
+//     if ($includePath) {
+//         $url .= $_SERVER['REQUEST_URI'];
+//     }
+
+//     return $url;
+// }
 
 
 

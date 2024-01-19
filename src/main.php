@@ -1,5 +1,6 @@
 <?php
 
+use App\Helpers\Config;
 use App\Controllers;
 use App\Helpers\Hash;
 use App\Helpers\Template;
@@ -8,6 +9,7 @@ use App\Middleware;
 use App\Models\Session;
 
 
+use DI\Container;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
@@ -54,38 +56,35 @@ $app->addBodyParsingMiddleware();
 
 //     return $response;
 // });
+//
+//
+$app->add(new \Tuupola\Middleware\CorsMiddleware, Config::get('cors'));
 
+// /**
+//  * Setup Lazy CORS handling
+//  * https://www.slimframework.com/docs/v4/cookbook/enable-cors.html
+//  */
+// $app->add(function ($request, $handler) {
+//     $response = $handler->handle($request);
 
-/**
- * Setup Lazy CORS handling
- * https://www.slimframework.com/docs/v4/cookbook/enable-cors.html
- */
-$app->add(function ($request, $handler) {
-    $response = $handler->handle($request);
+//     $origins = Config::get('cors.origins');
 
-    $origins = [
-        'http://localhost:3005',
-        'http://localhost:5173',
-        'https://gbox.name',
-        'https://brandtley.name',
-    ];
+//     // TODO: need a more robust way of allowing CORS handling
+//     $http_origin = 'http://localhost:5173';
 
-    // TODO: need a more robust way of allowing CORS handling
-    $http_origin = 'http://localhost:5173';
+//     // $http_origin = in_array($origins, $_SERVER['HTTP_ORIGIN']) ? ;
 
-    // $http_origin = in_array($origins, $_SERVER['HTTP_ORIGIN']) ? ;
+//     // if (!in_array($http_origin, $origins)) {
+//     //     return errorResponse('origin not allowed', HTTP_FORBIDDEN);
+//     // }
 
-    // if (!in_array($http_origin, $origins)) {
-    //     return errorResponse('origin not allowed', HTTP_FORBIDDEN);
-    // }
-
-    return $response
-        ->withHeader('Access-Control-Allow-Origin',         $http_origin)
-        ->withHeader('Access-Control-Allow-Headers',        'X-Requested-With, Content-Type, Accept, Origin, Authorization')
-        ->withHeader('Access-Control-Allow-Methods',        'GET, POST, PUT, DELETE, PATCH, OPTIONS')
-        ->withHeader('Access-Control-Allow-Credentials',    'true');
-        ;
-});
+//     return $response
+//         ->withHeader('Access-Control-Allow-Origin',         $http_origin)
+//         ->withHeader('Access-Control-Allow-Headers',        'X-Requested-With, Content-Type, Accept, Origin, Authorization')
+//         ->withHeader('Access-Control-Allow-Methods',        'GET, POST, PUT, DELETE, PATCH, OPTIONS')
+//         ->withHeader('Access-Control-Allow-Credentials',    'true');
+//         ;
+// });
 
 
 $app->addErrorMiddleware(
@@ -95,7 +94,29 @@ $app->addErrorMiddleware(
 );
 
 
-if (getenv('PHP_ENV') === 'production') {
+//
+// CONTAINER STUFFS
+//
+
+$container = new Container();
+
+AppFactory::setContainer($container);
+
+
+// // Register Middleware On Container
+// $container->set('csrf', function () use ($responseFactory) {
+//     return new Guard($responseFactory);
+// });
+
+
+// Register the http cache middleware.
+$app->add(new \Slim\HttpCache\Cache('public', 86400));
+
+// Create the cache provider.
+$container->set('httpcache', new \Slim\HttpCache\CacheProvider());
+
+
+if (is_dev()) {
     // SETUP ROUTE CACHER
     $routeCollector = $app->getRouteCollector();
     $routeCollector->setCacheFile(__DIR__ . '/../storage/cache/routes.cache');

@@ -23,14 +23,12 @@ class AppController {
             'routes' => Config::get('public_routes'),
         ];
 
-
         // Pass token verification to client AppConfig
         $hasToken = $req->getAttribute('hasToken');
 
         if ($hasToken) {
             $config['isValidToken'] = $req->getAttribute('isValidToken');
         }
-
 
         $config = json_encode($config);
 
@@ -40,7 +38,9 @@ class AppController {
             </script>
         SRC;
 
-        $body = preg_replace('/<!--\s*PHPINCLUDE\s*-->/i', trim($src), $body);
+        $src    = preg_replace('/\s+/i', '', $src);
+
+        $body   = preg_replace('/<!--\s*PHPINCLUDE\s*-->/i', trim($src), $body);
 
         $res->getBody()->write($body);
 

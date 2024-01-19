@@ -40,24 +40,27 @@ class BaseController {
 
     //     return R::store($model);
     // }
+    public function create() {
+
+    }
 
 
-    protected function readAll(string $where = '', array $values = []) {
+    public function readAll(string $where = '', array $values = []) {
         return R::findAll($this->table, $where, $values);
     }
 
 
-    protected function read(string $where = '', array $values = []) {
+    public function read(string $where = '', array $values = []) {
         return R::read($this->table, $where, $values);
     }
 
 
-    protected function update() {
+    public function update() {
 
     }
 
 
-    protected function delete() {
+    public function delete() {
 
     }
 
