@@ -330,6 +330,8 @@
                 token: passwordResetToken,
             })
 
+            console.log(res)
+
             // TODO: fix error messaging for invalid user password submissions
         } catch(err) {
             setError(err)

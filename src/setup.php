@@ -6,7 +6,6 @@ use App\Helpers\Logger;
 use App\Helpers\Template;
 use App\Helpers\Token;
 use App\Helpers\Validator;
-
 use App\Models\Session;
 
 use RedBeanPHP\Facade as R;
@@ -33,136 +32,15 @@ define('HTTP_RATE_LIMITED', 429);
 define('HTTP_SERVER_ERROR', 500);
 
 
-Config::setup([
-
-    'company' => [
-        'name'          => 'Company Name',
-        'legalName'     => 'Company Name, LLC.',
-        'phone'         => '555-555-1234',
-        'email'         => 'email@company.name',
-        'emailFrom'     => 'do-not-reply@company.name',
-        'emailReply'    => 'replyto@company.name',
-
-        'address' => [
-            'street1'   => '123 Waffleton Way',
-            'street2'   => 'Building 3, Suite 205',
-            'city'      => 'Fauston',
-            'state'     => 'AA',
-            'zipcode'   => '55555',
-        ],
-    ],
-
-
-    'app' => [
-        'name'          => 'Photo Share',
-        'established'   => 2023,
-        'copyright'     => 'Gbox Studios',
-        'url'           => 'http://localhost:3005',
-    ],
-
-
-    // @docs: https://github.com/tuupola/cors-middleware
-    'cors' => [
-        "origin" => [
-            'http://localhost:3005',
-            'http://localhost:5173',
-            'https://gbox.name',
-            'https://brandtley.name',
-        ],
-        "methods" => ["GET", "POST", "PUT", "PATCH", "DELETE"],
-        "headers.allow" => ["Authorization", "If-Match", "If-Unmodified-Since"],
-        "headers.expose" => ["Etag"],
-        "credentials" => true,
-        "cache" => 86400,
-    ],
-
-
-    'registration' => [
-        'min_age' => 18,
-    ],
-
-
-    'paths' => [
-        'cache_dir'         => path('/storage/cache'),
-        'database_dir'      => path('/storage/database'),
-        'database_file'     => path('/storage/database/main.db'),
-        'logs_dir'          => path('/storage/logs'),
-        'migrations_dir'    => path('/migrations'),
-        'sessions_dir'      => path('/storage/sessions'),
-        'views_dir'         => path('/src/views'),
-    ],
-
-
-    'public_routes' => [
-        // PUBLIC CONTENT PAGES
-        'home'              => '/',
-        'about'             => '/about',
-        'privacy'           => '/privacy-policy',
-        'terms'             => '/terms-of-use',
-
-        // AUTH ROUTES
-        'login'             => '/login',
-        'logout'            => '/logout',
-        'register'          => '/register',
-        'passwordreset'     => '/password-reset',
-        'verification'      => '/verification',
-
-        // DASHBOARD ROUTES
-
-    ],
-
-
-    'emails' => [
-        // TODO: convert these values to use the environment variables
-        // NOTES: https://github.com/rnwood/smtp4dev/wiki/Configuring-Clients
-        'smtp' => [
-            // 'auth'      => false,
-            // 'autotls'   => false,
-            // 'debug'     => false,
-            // 'enabled'   => true,
-            // 'host'      => 'smtp4dev',
-            // 'password'  => '',
-            // 'port'      => 25,
-            // 'secure'    => false,
-            // 'username'  => '',
-
-            // UPDATES
-            'auth'      => env('EMAIL_AUTH', false),
-            'autotls'   => env('EMAIL_AUTOTLS', false),
-            'debug'     => env('EMAIL_DEBUG', false),
-            'enabled'   => env('EMAIL_ENABLED', true),
-            'host'      => env('EMAIL_HOST'),
-            'password'  => env('EMAIL_PASSWORD', ''),
-            'port'      => env('EMAIL_PORT', 25),
-            'secure'    => env('EMAIL_SECURE', false),
-            'username'  => env('EMAIL_USERNAME', ''),
-
-        ],
-    ],
-
-
-]);
-
-
-[$year, $month, $day] = explode('-', date('Y-m-d'));
-
-Config::set([
-    'date' => [
-        'year' => $year,
-        'month' => $month,
-        'day' => $day,
-        'full' => date('Y-m-d'),
-    ],
-]);
+require __DIR__ . '/appconfig.php';
 
 
 
-// SETUP HASH UTILITY
-
-Hash::setup();
-
-
-// DOCUMENT VARIOUS FOLDER LOCATIONS
+/**
+ * ============================================================
+ *  DOCUMENT VARIOUS FOLDER LOCATIONS
+ * ============================================================
+ */
 
 // TODO: adjust folder permissions and can test whether it works or not
 $dirs = [
@@ -177,9 +55,25 @@ if (is_dev()) {
     array_push($dirs, [ Config::get('paths.migrations_dir'),  0766 ]);
 }
 
-
 mkdirs($dirs);
 
+
+
+/**
+ * ============================================================
+ *  HASHING UTILITY
+ * ============================================================
+ */
+
+Hash::setup();
+
+
+
+/**
+ * ============================================================
+ *  LOGGER UTILITY
+ * ============================================================
+ */
 
 Logger::setup([
     'logs_path' => Config::get('paths.logs_dir'),
@@ -187,19 +81,46 @@ Logger::setup([
 ]);
 
 
+
+/**
+ * ============================================================
+ *  SESSION UTILITY
+ * ============================================================
+ */
+
 Session::setup([
-    'path' => Config::get('paths.sessions_dir'),
-    // 'expires' => ,
+    'path'      => Config::get('paths.sessions_dir'),
+    // 'expires'   => Config::get('session.expires'),
 ]);
 
 // Capture the origin IP address so we can compare as needed later
 Session::set('ipaddress', $_SERVER['REMOTE_ADDR'] ?? null);
 
 
+
+/**
+ * ============================================================
+ *  TOKEN UTILITY
+ * ============================================================
+ */
+
 Token::setup();
 
 
-function url(string $pathname) {
+
+/**
+ * ============================================================
+ *  TEMPLATE UTILITY
+ * ============================================================
+ */
+
+
+/**
+ * [templateUrl description]
+ * @param  string $pathname [description]
+ * @return [type]           [description]
+ */
+function templateUrl(string $pathname) {
     return $pathname;
 }
 
@@ -209,10 +130,17 @@ Template::setup([
     'cache_dir' => path(Config::get('paths.cache_dir') . '/views'),
     'views_dir' => Config::get('paths.views_dir'),
     'filters' => [
-        'url' => 'url'
+        'url' => 'templateUrl'
     ],
 ]);
 
+
+
+/**
+ * ============================================================
+ *  DATABASE  UTILITY
+ * ============================================================
+ */
 
 R::setup('sqlite:' . Config::get('paths.database_file'));
 R::useFeatureSet( 'novice/latest' );

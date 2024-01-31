@@ -116,14 +116,27 @@ function findTokensByUser(string $user_uuid, string $type) {
 
 
 function findToken(string $token, string $type) {
-    return R::findOne('token', 'token = :token AND type = :type AND expires_at > :now AND deleted_at IS NULL',
-        [
-            'token' => $token,
-            'type'  => $type,
-            'now'   => time(),
-        ]);
+    $query = 'token = :token AND type = :type AND expires_at > :now';
+
+    $params = [
+        'token' => $token,
+        'type'  => $type,
+        'now'   => time(),
+    ];
+
+    return R::findOne('token', $query, $params);
 }
 
+
+function findPasswordResetToken(string $token) {
+    return findToken($token, TokenType::PASSWORD_RESET);
+}
+
+
+
+function findUserById(string $uuid) {
+    return R::findOne('user', 'uuid = :uuid', [ 'uuid' => $uuid ]);
+}
 
 /**
  * Creates a token and persists to database
@@ -154,7 +167,7 @@ function createToken(array $options) {
     $bean->type         = $options->type;
     $bean->token        = $options->token;
     $bean->userUuid     = $options->user_uuid;
-    $bean->expiresAt    = now() + $options->expires;
+    $bean->expiresAt    = now($options->expires);
     $bean->maxAttempts  = $options->max_attempts;
 
     R::store($bean);
@@ -170,7 +183,7 @@ function createPasswordResetToken(string $user_uuid) {
         'token'         => Token::generateSHA256([
             'secret' => 'PasswordResetTokenSecretPhraseHere',
         ]),
-        'expires'       => now() + minutes(10),
+        'expires'       => minutes(10),
         'max_attempts'  => 3,
     ]);
 }

@@ -119,49 +119,82 @@ function dateFromTimestamp(int $timestamp): \DateTime {
 }
 
 
-
+/**
+ * [now description]
+ * @param  int|integer $offset [description]
+ * @return [type]              [description]
+ */
 function now(int $offset = 0): int {
-    return (int) (floor(microtime(true)) + $offset);
+    return time() + $offset;
 }
 
 
-
+/**
+ * [millis description]
+ * @param  [type] $seconds [description]
+ * @return [type]          [description]
+ */
 function millis($seconds): int {
     return (int) floor($seconds *= 1000);
 }
 
 
-
+/**
+ * [seconds description]
+ * @param  int|integer $n [description]
+ * @return [type]         [description]
+ */
 function seconds(int $n = 1): int {
     return $n;
 }
 
 
-
+/**
+ * [minutes description]
+ * @param  int|integer $n [description]
+ * @return [type]         [description]
+ */
 function minutes(int $n = 1): int {
     return seconds(60) * $n;
 }
 
 
-
+/**
+ * [hours description]
+ * @param  int|integer $n [description]
+ * @return [type]         [description]
+ */
 function hours(int $n = 1): int {
     return minutes(60) * $n;
 }
 
 
-
+/**
+ * [days description]
+ * @param  int|integer $n [description]
+ * @return [type]         [description]
+ */
 function days(int $n = 1): int {
     return hours(24) * $n;
 }
 
 
-
+/**
+ * [path description]
+ * @param  string $path [description]
+ * @return [type]       [description]
+ */
 function path(string $path): string {
     return getcwd() . '/../' . trim($path, '/');
 }
 
 
-
+/**
+ * [makeUrl description]
+ * @param  string $path  [description]
+ * @param  array  $query [description]
+ * @return [type]        [description]
+ */
 function makeUrl(string $path, array $query=[]): string {
     // $host = $_SERVER['HTTP_ORIGIN'] ?? $_SERVER['HTTP_HOST'];
     $scheme = $_SERVER['REQUEST_SCHEME'] ?? 'http';
@@ -199,7 +232,11 @@ function makeUrl(string $path, array $query=[]): string {
 // }
 
 
-
+/**
+ * [mkdirs description]
+ * @param  array  $paths [description]
+ * @return [type]        [description]
+ */
 function mkdirs(array $paths) {
     // $paths = [
     //     [ "/dir/path/here",  0766 ],
@@ -214,7 +251,12 @@ function mkdirs(array $paths) {
 }
 
 
-
+/**
+ * [filterJson description]
+ * @param  [type] $fields      [description]
+ * @param  array  $allowedList [description]
+ * @return [type]              [description]
+ */
 function filterJson($fields, array $allowedList) {
     $res    = [];
     foreach ($allowedList as $key => $filter) {
@@ -228,21 +270,28 @@ function filterJson($fields, array $allowedList) {
                 $value = (bool) $value;
                 break;
             case 'float':
+                break;
                 $value = (float) filter_var($value, FILTER_SANITIZE_NUMBER_FLOAT);
             case 'int':
+                break;
                 $value = (int) filter_var($value, FILTER_SANITIZE_NUMBER_INT);
             case 'email':
+                break;
                 $value = filter_var($value, FILTER_SANITIZE_EMAIL);
             case 'string':
+                break;
                 $value = (string) $value;
             case 'array':
+                break;
                 $value = (array) $value;
             case 'date':
+                break;
                 $value = date($filter);
             case 'datetime':
                 $value = $value
                     ? (new DateTime($value))->format('Y-m-d H:i:s')
                     : null;
+                break;
         }
         $res[$key] = $value;
     }
@@ -250,7 +299,10 @@ function filterJson($fields, array $allowedList) {
 }
 
 
-
+/**
+ * [getUserAgent description]
+ * @return [type] [description]
+ */
 function getUserAgent() {
     return implode('.', [
         $_SERVER['HTTP_USER_AGENT'] ?? '',
@@ -260,7 +312,13 @@ function getUserAgent() {
 }
 
 
-
+/**
+ * [minmax description]
+ * @param  float         $value [description]
+ * @param  float|integer $min   [description]
+ * @param  float|null    $max   [description]
+ * @return [type]               [description]
+ */
 function minmax(int|float $value, int|float $min = 0, int|float $max = null) {
     if ($value < $min) { return $min; }
     if ($max && $value > $max) { return $max; }

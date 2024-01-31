@@ -94,7 +94,7 @@ class Token {
         }
 
         $options = array_replace_recursive([
-            'data'      => time() . rand(1000, 10000),
+            'data'      => time() + rand(1000, 10000),
             'secret'    => 'itsasecrettoeveryone',
             'binary'    => false,
         ]);

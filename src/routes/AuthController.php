@@ -14,7 +14,6 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 
 use RedBeanPHP\Facade as R;
 
-// -----
 
 class AuthController {
 

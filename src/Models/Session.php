@@ -5,7 +5,7 @@ namespace App\Models;
 
 use RedBeanPHP\Facade as R;
 
-// TODO setup database sessions table; store createdAt, expiresAt, id
+// TODO: setup database sessions table; store createdAt, expiresAt, id
 
 // @sauce: https://www.php.net/manual/en/function.session-cache-limiter.php
 define('SESSION_CACHE_PRIVATE',             'private');
@@ -37,6 +37,9 @@ class Session {
             session_save_path($options['path']);
         }
 
+
+        // TODO: implement session expiration stuffs
+        // https://stackoverflow.com/a/1270960
         if (!self::get('expires')) {
             self::set('expires', now() + $options['expires']);
         }

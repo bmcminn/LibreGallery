@@ -46,11 +46,10 @@ class AppController {
 
         return $res;
     }
-
-
 }
 
 
+// CATCH-ALL ROUTE FOR CLIENT APP ROUTING
 $app->get('/{path:.*}', AppController::class . ':app')
     ->add(\App\Middleware\ValidatePasswordResetToken::class)
 ;

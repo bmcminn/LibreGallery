@@ -33,6 +33,13 @@ class AuthController {
     ];
 
 
+    public const Schema = [
+        'email'             => [ 'email',           'required|email', FILTER_SANITIZE_EMAIL ],
+        'password'          => [ 'password',        'required|min:9', FILTER_SANITIZE_SPECIAL_CHARS ],
+        'passwordconfirm'   => [ 'passwordconfirm', 'required|same:password', FILTER_SANITIZE_SPECIAL_CHARS ],
+        'token'             => [ 'token',           'required|min:30', FILTER_SANITIZE_SPECIAL_CHARS ],
+    ];
+
     public static array $schema = [
         'email'             => [ 'email',           'required|email', FILTER_SANITIZE_EMAIL ],
         'password'          => [ 'password',        'required|min:9', FILTER_SANITIZE_SPECIAL_CHARS ],
@@ -104,7 +111,7 @@ class AuthController {
         $model = [];
 
         $model['user'] = filterJson($user->export(), [
-            'id'        => 'int',
+            'uuid'      => 'int',
             'username'  => 'string',
             'email'     => 'email',
             'username'  => 'string',
@@ -278,9 +285,14 @@ class AuthController {
         }
 
         try {
-            $token = findToken($data['token'], TokenType::PASSWORD_RESET);
+            // $token = findToken($data['token'], TokenType::PASSWORD_RESET);
+            $token = findPasswordResetToken($data['token']);
 
-            $user = R::findOne('user', 'uuid = :uuid', [ 'uuid' => $token->user_uuid ]);
+            if (!$token) {
+                return errorResponse('Token is invalid or missing', HTTP_BAD_REQUEST);
+            }
+
+            $user = findUserById($token->user_uuid);
 
             $user->password = Hash::password($data['password']);
 
@@ -290,13 +302,13 @@ class AuthController {
             // trash token from being used again
             R::trash($token);
 
-        } catch(\Execption $err) {
-            errorResponse($err);
-        }
+            return jsonResponse([
+                'message' => 'success',
+            ]);
 
-        return jsonResponse([
-            'message' => 'success',
-        ]);
+        } catch(\Execption $err) {
+            return errorResponse($err);
+        }
     }
 
 
